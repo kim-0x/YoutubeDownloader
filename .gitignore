@@ -1,0 +1,66 @@
+# Build outputs
+bin/
+obj/
+
+# Rider project files
+.idea/
+
+# Visual Studio cache/options
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code settings (uncomment if you don't want to share workspace settings)
+# .vscode/
+
+# Auto-generated VS Code workspace file
+*.code-workspace
+
+# NuGet packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# Uncomment if necessary:
+# **/packages/repositories.config
+
+# Dotnet Core tooling
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# User-specific files
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.log
+*.tlog
+*.gz
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio Code settings (optional)
+# Comment out if you DO want to keep your workspace settings in source control.
+.vscode/**
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+
+# macOS metadata
+.DS_Store
