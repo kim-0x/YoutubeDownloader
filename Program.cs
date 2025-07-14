@@ -31,13 +31,27 @@ do
     var tempCoverFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.jpg");
     await System.IO.File.WriteAllBytesAsync(tempCoverFile, coverBytes);
 
+    Console.Write("Do you want to trim audio(Y/n)?: ");
+    var tryTrim = Console.ReadLine();
+    string? startAt = null;
+    string? endAt = null;
+    if (tryTrim != null && tryTrim.ToLower() == "y")
+    {
+        Console.Write("Start At (hh:mm:ss): ");
+        startAt = Console.ReadLine();
+        Console.Write("End At (hh:mm:ss): ");
+        endAt = Console.ReadLine();
+    }
+
     var downladerModel = new DownloaderModel
     {
         UrlPath = urlPath,
         SaveFolder = saveFolder,
         TempAudioFile = tempFile,
         TempCoverFile = tempCoverFile,
-        VideoInfo = video
+        VideoInfo = video,
+        StartAt = startAt,
+        EndAt = endAt
     };
 
     Console.WriteLine("Convert to MP3...");

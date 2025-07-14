@@ -53,6 +53,15 @@ public class DownloadService
             .AddParameter($"-metadata title=\"{model.VideoInfo.Title}\"")
             .AddParameter($"-metadata artist=\"{model.VideoInfo.Author}\"");
 
+        if (!string.IsNullOrEmpty(model.StartAt))
+        {
+            conversion.AddParameter($"-ss {model.StartAt}");
+        }
+        if (!string.IsNullOrEmpty(model.EndAt))
+        {
+            conversion.AddParameter($"-to {model.EndAt}");
+        }
+
         conversion.SetOutput($"{model.SaveFolder}/{model.VideoInfo.Title}.mp3");
 
         await conversion.Start();
