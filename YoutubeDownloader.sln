@@ -1,0 +1,36 @@
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.ConsoleApp", "YoutubeDownloader.ConsoleApp\YoutubeDownloader.ConsoleApp.csproj", "{0704EA0B-630E-CE9A-7881-056C16A241EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.Core", "YoutubeDownloader.Core\YoutubeDownloader.Core.csproj", "{EAD829C9-62E5-4A04-BFA1-FF04CACC4390}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoutubeDownloader.Infrastructure", "YoutubeDownloader.Infrastructure\YoutubeDownloader.Infrastructure.csproj", "{840B992B-8B58-4A0C-8541-4AE2718C9E07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0704EA0B-630E-CE9A-7881-056C16A241EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0704EA0B-630E-CE9A-7881-056C16A241EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0704EA0B-630E-CE9A-7881-056C16A241EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0704EA0B-630E-CE9A-7881-056C16A241EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAD829C9-62E5-4A04-BFA1-FF04CACC4390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAD829C9-62E5-4A04-BFA1-FF04CACC4390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAD829C9-62E5-4A04-BFA1-FF04CACC4390}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAD829C9-62E5-4A04-BFA1-FF04CACC4390}.Release|Any CPU.Build.0 = Release|Any CPU
+		{840B992B-8B58-4A0C-8541-4AE2718C9E07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{840B992B-8B58-4A0C-8541-4AE2718C9E07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{840B992B-8B58-4A0C-8541-4AE2718C9E07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{840B992B-8B58-4A0C-8541-4AE2718C9E07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8D7E1D44-9910-425E-98E3-DBFD2F96BC54}
+	EndGlobalSection
+EndGlobal
