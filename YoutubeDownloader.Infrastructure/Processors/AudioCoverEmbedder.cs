@@ -1,10 +1,10 @@
 public class AudioCoverEmbedder : IAudioCoverEmbedder
 {
-    public async Task<string> GetCoverImageAsync(string urlPath)
+    public async Task<string> GetCoverImageAsync(string videoUrl)
     {
         // Implementation for retrieving cover image from YouTube
         using var http = new HttpClient();
-        byte[] coverBytes = await http.GetByteArrayAsync(urlPath);
+        byte[] coverBytes = await http.GetByteArrayAsync(videoUrl);
         string tempCoverFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.jpg");
         await File.WriteAllBytesAsync(tempCoverFile, coverBytes);
         return tempCoverFile;

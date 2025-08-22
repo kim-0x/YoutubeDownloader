@@ -4,10 +4,10 @@ using YoutubeExplode;
 public class VideoInfoProvider : IVideoInfoProvider
 {
     private readonly YoutubeClient _youtubeClient = new YoutubeClient();
-    public async Task<string> DownloadAudioStreamAsync(string urlPath)
+    public async Task<string> DownloadAudioStreamAsync(string videoUrl)
     {
         // Custom implementation for downloading audio stream from YouTube
-        var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(urlPath);
+        var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(videoUrl);
         var audioStreams = streamManifest.GetAudioOnlyStreams();
         var bestAudio = audioStreams
             .OrderByDescending(s => s.Bitrate)
@@ -24,10 +24,10 @@ public class VideoInfoProvider : IVideoInfoProvider
         return tempFile;
     }
 
-    public async Task<VideoModel> GetInfoAsync(string urlPath)
+    public async Task<VideoModel> GetInfoAsync(string videoUrl)
     {
          // Implementation for YouTube video info retrieval
-        var video = await _youtubeClient.Videos.GetAsync(urlPath);
+        var video = await _youtubeClient.Videos.GetAsync(videoUrl);
 
         return new VideoModel
         {

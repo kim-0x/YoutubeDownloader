@@ -16,9 +16,9 @@ if (saveFolder == null) return;
 do
 {    
     Console.Clear();
-    Console.Write("Enter Url Path: ");
-    var urlPath = Console.ReadLine();
-    if (urlPath == null) return;
+    Console.Write("Enter Video URL: ");
+    var videoUrl = Console.ReadLine();
+    if (videoUrl == null) return;
 
     Console.Write("Do you want to trim audio(Y/n)?: ");
     var tryTrim = Console.ReadLine();
@@ -33,7 +33,7 @@ do
     }
 
     var audioDownloadService = services.GetRequiredService<AudioDownloadService>();
-    await audioDownloadService.ExecuteAsync(urlPath, saveFolder, startAt, endAt);
+    await audioDownloadService.ExecuteAsync(new DownloadRequest(videoUrl, saveFolder, startAt, endAt));
 
     Console.Write("Done. Do you want to download more? (Enter/ESC): ");
 } while (Console.ReadKey().Key != ConsoleKey.Escape);

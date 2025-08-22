@@ -7,28 +7,28 @@ public class YoutubeAudioDownloadService : AudioDownloadService
         : base(videoInfoProvider, audioConverter, audioCoverEmbedder)
     {}
 
-    protected override Task<string> DownloadAudioStreamAsync(string urlPath)
+    protected override Task<string> DownloadAudioStreamAsync(string videoUrl)
     {
         Console.WriteLine("Downloading audio stream from Youtube...");
-        return base.DownloadAudioStreamAsync(urlPath);
+        return base.DownloadAudioStreamAsync(videoUrl);
     }
 
-    protected override Task<VideoModel> GetVideoInfoAsync(string urlPath)
+    protected override Task<VideoModel> GetVideoInfoAsync(string videoUrl)
     {
         Console.WriteLine("Fetching video info from Youtube...");
-        return base.GetVideoInfoAsync(urlPath);
+        return base.GetVideoInfoAsync(videoUrl);
     }
 
-    protected override Task<string> ConvertToMp3Async(string audioStreamFilePath, string saveFolder, VideoModel videoInfo, string? startAt = null, string? endAt = null)
+    protected override Task<string> ConvertToMp3Async(AudioConversionRequest request)
     {
         Console.WriteLine("Converting audio to MP3 format...");
-        return base.ConvertToMp3Async(audioStreamFilePath, saveFolder, videoInfo, startAt, endAt);
+        return base.ConvertToMp3Async(request);
     }
 
-    protected override Task<string> GetCoverImageAsync(string urlPath)
+    protected override Task<string> GetCoverImageAsync(string videoUrl)
     {
         Console.WriteLine("Downloading cover image...");
-        return base.GetCoverImageAsync(urlPath);
+        return base.GetCoverImageAsync(videoUrl);
     }
 
     protected override void EmbedCover(string audioOutputFilePath, string coverImagePath)
