@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>SignalR Test</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+      #log {
+        white-space: pre-wrap;
+        border: 1px solid #ccc;
+        padding: 8px;
+      }
+    </style>
+    <script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+  </head>
+  <body>
+    <h1>SignalR Connection Test</h1>
+    <label
+      >Server URL:
+      <input
+        id="serverUrl"
+        size="40"
+        value="https://localhost:7085/hubs/test"
+      />
+    </label>
+    <button id="connectBtn">Connect</button>
+    <button id="pingBtn" disabled>Ping</button>
+    <div id="log" style="margin-top: 12px; height: 240px; overflow: auto"></div>
+
+    <script>
+      const log = (m) => {
+        const el = document.getElementById("log");
+        el.textContent += m + "\n";
+        el.scrollTop = el.scrollHeight;
+      };
+
+      let connection;
+
+      document.getElementById("connectBtn").onclick = async () => {
+        const url = document.getElementById("serverUrl").value.trim();
+        connection = new signalR.HubConnectionBuilder()
+          .withUrl(url)
+          .withAutomaticReconnect()
+          .build();
+
+        connection.on("status", (msg) => log(`[status] ${msg}`));
+
+        try {
+          await connection.start();
+          log("Connected to hub.");
+          document.getElementById("pingBtn").disabled = false;
+        } catch (err) {
+          log("Connection error: " + err);
+        }
+      };
+
+      document.getElementById("pingBtn").onclick = () => {
+        log(`[status] Sending Ping...`);
+        connection.invoke("Ping");
+      };
+    </script>
+  </body>
+</html>
