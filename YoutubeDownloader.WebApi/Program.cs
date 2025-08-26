@@ -6,6 +6,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
+    .AddSingleton<IAudioConverter, AudioConverter>()
+    .AddSingleton<IVideoInfoProvider, VideoInfoProvider>()
+    .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>();
+builder.Services.AddControllers();
 
 builder.Services.AddCors(options => {
     options.AddDefaultPolicy( policy => 
@@ -26,11 +31,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors();
+app.MapControllers();
 app.MapGet("/", () => Results.Ok("Welcome to the Youtube Downloader Web API!"))
 .WithName("Quick health check")
 .WithOpenApi();
 
 app.MapHub<TestHub>("/hubs/test");
-
 
 app.Run();
