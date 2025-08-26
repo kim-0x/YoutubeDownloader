@@ -12,8 +12,9 @@ builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
     .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>();
 builder.Services.AddControllers();
 
-builder.Services.AddCors(options => {
-    options.AddDefaultPolicy( policy => 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
         policy.WithOrigins("http://127.0.0.1:5500")
            .AllowAnyMethod()
            .AllowAnyHeader()
@@ -29,6 +30,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors();
 app.MapControllers();
