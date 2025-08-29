@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class DownloadController : ControllerBase
 {
-    private readonly AudioDownloadService _audioDownloadService;
+     private readonly AudioDownloadService _audioDownloadService;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _environment;
 
@@ -36,8 +36,8 @@ public class DownloadController : ControllerBase
                 StartAt: model.StartAt,
                 EndAt: model.EndAt
             );
-            
-            Task.Run(() => _audioDownloadService.ExecuteAsync(request));
+
+            var _ = Task.Run(async () => await _audioDownloadService.ExecuteAsync(request));
             return Ok("Request accepted. Processing download.");
         }
         catch (Exception ex)

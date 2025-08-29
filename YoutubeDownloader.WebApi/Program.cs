@@ -10,12 +10,14 @@ builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
     .AddSingleton<IAudioConverter, AudioConverter>()
     .AddSingleton<IVideoInfoProvider, VideoInfoProvider>()
     .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>();
+
+builder.Services.AddSingleton<IProgressNotifier, ProgressNotifier>();
 builder.Services.AddControllers();
 
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://127.0.0.1:5500")
+        policy.WithOrigins("http://localhost:4200")
            .AllowAnyMethod()
            .AllowAnyHeader()
            .AllowCredentials());
@@ -38,6 +40,6 @@ app.MapGet("/", () => Results.Ok("Welcome to the Youtube Downloader Web API!"))
 .WithName("Quick health check")
 .WithOpenApi();
 
-app.MapHub<TestHub>("/hubs/test");
+app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();
