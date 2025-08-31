@@ -1,0 +1,12 @@
+<h1>Youtube Download Client</h1>
+<label
+  >Youtube URL:
+  <input size="40" [value]="videoUrl" (change)="onChange($event)" />
+</label>
+<button (click)="download()">Download</button>
+<div
+  [innerHtml]="log"
+  #outputContainer
+  style="margin-top: 12px; height: 240px; overflow: auto"
+></div>
+<router-outlet></router-outlet>
