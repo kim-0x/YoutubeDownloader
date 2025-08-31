@@ -1,16 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import * as signalR from '@microsoft/signalr';
+import { IReport, formatReport } from './model/report.model';
 
 const HUB_URL = 'https://localhost:7085/hubs/notification';
 const API_URL = 'https://localhost:7085/api/download';
-
-interface IReport {
-  type: 'error' | 'start' | 'progress' | 'completed';
-  message: string;
-  step?: number;
-  totalSteps?: number;
-}
 
 @Component({
   selector: 'app-root',
@@ -21,7 +15,7 @@ interface IReport {
 export class AppComponent implements OnInit {
   @ViewChild('outputContainer') outputContainer!: ElementRef<HTMLDivElement>;
 
-  url = '';
+  videoUrl = '';
   log = '';
 
   constructor() {
@@ -44,11 +38,11 @@ export class AppComponent implements OnInit {
 
   onChange(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.url = input.value;
+    this.videoUrl = input.value;
   }
 
   download() {
-    if (!this.url) {
+    if (!this.videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
@@ -58,7 +52,7 @@ export class AppComponent implements OnInit {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ videoUrl: this.url }),
+        body: JSON.stringify({ videoUrl: this.videoUrl }),
       })
         .then((data) => {
           console.log('Success', data);
@@ -72,20 +66,7 @@ export class AppComponent implements OnInit {
   }
 
   private addResult(report: IReport) {
-    if (report.type === 'progress') {
-      this.log +=
-        `Progress: ${report.step}/${report.totalSteps} - ${report.message}` +
-        '<br/>';
-    } else if (report.type === 'start') {
-      this.log += `Started: ${report.message}` + '<br/>';
-    } else if (report.type === 'completed') {
-      this.log += `Completed: ${report.message}` + '<br/>';
-    } else if (report.type === 'error') {
-      this.log += `Error: ${report.message}` + '<br/>';
-    } else {
-      this.log += JSON.stringify(report) + '<br/>';
-    }
-
+    this.log += formatReport(report);
     setTimeout(() => {
       this.outputContainer.nativeElement.scrollTop =
         this.outputContainer.nativeElement.scrollHeight;
