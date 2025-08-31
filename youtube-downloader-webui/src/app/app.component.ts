@@ -2,9 +2,11 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import * as signalR from '@microsoft/signalr';
 
-const url = 'https://localhost:7085/hubs/notification';
+const HUB_URL = 'https://localhost:7085/hubs/notification';
+const API_URL = 'https://localhost:7085/api/download';
+
 interface IReport {
-  type: 0 | 1 | 2 | 3; // 0: start, 1: progress, 2: complete, 3: error
+  type: 'error' | 'start' | 'progress' | 'completed';
   message: string;
   step?: number;
   totalSteps?: number;
@@ -18,13 +20,13 @@ interface IReport {
 })
 export class AppComponent implements OnInit {
   @ViewChild('outputContainer') outputContainer!: ElementRef<HTMLDivElement>;
-  title = 'downloader-client';
+
   url = '';
   log = '';
 
   constructor() {
     let connection = new signalR.HubConnectionBuilder()
-      .withUrl(url)
+      .withUrl(HUB_URL)
       .withAutomaticReconnect()
       .build();
 
@@ -51,7 +53,7 @@ export class AppComponent implements OnInit {
       return;
     }
     try {
-      fetch('https://localhost:7085/api/download', {
+      fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -70,19 +72,20 @@ export class AppComponent implements OnInit {
   }
 
   private addResult(report: IReport) {
-    if (report.type === 1) {
+    if (report.type === 'progress') {
       this.log +=
         `Progress: ${report.step}/${report.totalSteps} - ${report.message}` +
         '<br/>';
-    } else if (report.type === 0) {
+    } else if (report.type === 'start') {
       this.log += `Started: ${report.message}` + '<br/>';
-    } else if (report.type === 2) {
+    } else if (report.type === 'completed') {
       this.log += `Completed: ${report.message}` + '<br/>';
-    } else if (report.type === 3) {
+    } else if (report.type === 'error') {
       this.log += `Error: ${report.message}` + '<br/>';
     } else {
       this.log += JSON.stringify(report) + '<br/>';
     }
+
     setTimeout(() => {
       this.outputContainer.nativeElement.scrollTop =
         this.outputContainer.nativeElement.scrollHeight;

@@ -1,4 +1,7 @@
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<DownloadSetting>(
@@ -7,14 +10,19 @@ builder.Services.Configure<DownloadSetting>(
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSignalR();
 builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
     .AddSingleton<IAudioConverter, AudioConverter>()
     .AddSingleton<IVideoInfoProvider, VideoInfoProvider>()
     .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>();
-
 builder.Services.AddSingleton<IProgressNotifier, ProgressNotifier>();
 builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
+
+builder.Services.AddSignalR().AddJsonProtocol(option =>
+{
+    option.PayloadSerializerOptions.Converters.Add(
+        new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+    );
+});
 builder.Services.AddControllers();
 
 builder.Services.AddCors(options =>
