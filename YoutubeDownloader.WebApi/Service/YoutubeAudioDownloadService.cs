@@ -1,17 +1,17 @@
 public class YoutubeAudioDownloadService : AudioDownloadService
 {
     private readonly IProgressNotifier _progressNotifier;
-    private readonly IWebHostEnvironment _environment;
+    private readonly IOutputStorage _outputStorage;
     public YoutubeAudioDownloadService(
         IAudioCoverEmbedder audioCoverEmbedder,
         IAudioConverter audioConverter,
         IVideoInfoProvider videoInfoProvider,
         IProgressNotifier progressNotifier,
-        IWebHostEnvironment environment)
+        IOutputStorage outputStorage)
         : base(videoInfoProvider, audioConverter, audioCoverEmbedder)
     {
         _progressNotifier = progressNotifier;
-        _environment = environment;
+        _outputStorage = outputStorage;
     }
     protected override async Task<VideoModel> GetVideoInfoAsync(string videoUrl)
     {
@@ -27,9 +27,17 @@ public class YoutubeAudioDownloadService : AudioDownloadService
     }
     protected override async Task<string> ConvertToMp3Async(AudioConversionRequest request)
     {
-        await _progressNotifier.ReportProgressAsync(
-            new ReportModel(ReportType.Progress, "Converting audio to MP3...", 3, 5));
-        return await base.ConvertToMp3Async(request);
+        try
+        {
+            await _progressNotifier.ReportProgressAsync(
+                new ReportModel(ReportType.Progress, "Converting audio to MP3...", 3, 5));
+            return await base.ConvertToMp3Async(request);
+        } catch (Exception ex)
+        {
+            await _progressNotifier.ReportProgressAsync(
+                new ReportModel(ReportType.Error, $"Error during conversion: {ex.Message}"));
+            throw;
+        }
     }
     protected override async Task<string> GetCoverImageAsync(string videoUrl)
     {
@@ -43,7 +51,7 @@ public class YoutubeAudioDownloadService : AudioDownloadService
             new ReportModel(ReportType.Progress, "Embedding cover image...", 5, 5));
         base.EmbedCover(audioOutputFilePath, coverImagePath);
 
-        var hostedAudioPath = audioOutputFilePath.Replace(_environment.WebRootPath, "https://localhost:7085");
+        var hostedAudioPath = _outputStorage.GetFileInPublicUrl(audioOutputFilePath);
         await _progressNotifier.ReportProgressAsync(
             new ReportModel(ReportType.Completed, $"Download completed. {hostedAudioPath}"));
     }

@@ -4,17 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class DownloadController : ControllerBase
 {
-     private readonly AudioDownloadService _audioDownloadService;
-    private readonly IConfiguration _configuration;
-    private readonly IWebHostEnvironment _environment;
+    private readonly AudioDownloadService _audioDownloadService;
+    private readonly IOutputStorage _outputStorage;
 
     public DownloadController(AudioDownloadService audioDownloadService,
-        IConfiguration configuration,
-        IWebHostEnvironment environment)
+       IOutputStorage outputStorage)
     {
         _audioDownloadService = audioDownloadService;
-        _configuration = configuration;
-        _environment = environment;
+        _outputStorage = outputStorage;
     }
 
     [HttpPost]
@@ -27,12 +24,9 @@ public class DownloadController : ControllerBase
 
         try
         {
-            var outputDirectory = _configuration.GetSection("DownloadSettings:OutputDirectory").Value;
-            var saveFolder = Path.Combine(_environment.WebRootPath, outputDirectory ?? "downloads");
-
             var request = new DownloadRequest(
                 VideoUrl: model.VideoUrl,
-                SaveFolder: saveFolder,
+                SaveFolder: _outputStorage.GetStoragePath(),
                 StartAt: model.StartAt,
                 EndAt: model.EndAt
             );

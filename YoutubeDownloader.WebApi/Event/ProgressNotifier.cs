@@ -7,7 +7,6 @@ public class ProgressNotifier : IProgressNotifier
     public ProgressNotifier(IHubContext<NotificationHub> hubContext)
     {
         _hubContext = hubContext;
-        
     }
 
     public async Task ReportProgressAsync(ReportModel report)

@@ -1,9 +1,9 @@
 public enum ReportType
 {
-    Start,
-    Progress,
-    Completed,
-    Error
+    Error = -1,
+    Start = 0,
+    Progress = 1,
+    Completed = 2,
 }
 public record ReportModel(
    ReportType Type,

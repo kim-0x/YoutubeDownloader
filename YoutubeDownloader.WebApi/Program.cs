@@ -1,6 +1,8 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<DownloadSetting>(
+    builder.Configuration.GetSection("DownloadSettings"));
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -12,6 +14,7 @@ builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
     .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>();
 
 builder.Services.AddSingleton<IProgressNotifier, ProgressNotifier>();
+builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
 builder.Services.AddControllers();
 
 builder.Services.AddCors(options =>
