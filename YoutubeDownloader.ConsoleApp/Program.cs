@@ -6,6 +6,7 @@ var services = new ServiceCollection()
     .AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
     .AddSingleton<IAudioConverter, AudioConverter>()
     .AddSingleton<IVideoInfoProvider, VideoInfoProvider>()
+    .AddSingleton<IProgress<double>, ConsoleProgressReporter>()
     .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>()
     .BuildServiceProvider();
 

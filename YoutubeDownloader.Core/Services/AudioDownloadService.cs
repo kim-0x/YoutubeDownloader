@@ -3,12 +3,17 @@ public abstract class AudioDownloadService
     private readonly IVideoInfoProvider _videoInfoProvider;
     private readonly IAudioConverter _audioConverter;
     private readonly IAudioCoverEmbedder _audioCoverEmbedder;
+    private readonly IProgress<double>? _progress;
 
-    protected AudioDownloadService(IVideoInfoProvider videoInfoProvider, IAudioConverter audioConverter, IAudioCoverEmbedder audioCoverEmbedder)
+    protected AudioDownloadService(IVideoInfoProvider videoInfoProvider,
+        IAudioConverter audioConverter,
+        IAudioCoverEmbedder audioCoverEmbedder,
+        IProgress<double>? progress = null)
     {
         _videoInfoProvider = videoInfoProvider;
         _audioConverter = audioConverter;
         _audioCoverEmbedder = audioCoverEmbedder;
+        _progress = progress ?? new Progress<double>();
     }
 
     public async Task ExecuteAsync(DownloadRequest request)
@@ -20,8 +25,10 @@ public abstract class AudioDownloadService
         {
             // Get video info
             var videoInfo = await GetVideoInfoAsync(request.VideoUrl);
+
             // Download audio stream with file extension (e.g., .webm, .m4a)
             audioStreamFilePath = await DownloadAudioStreamAsync(request.VideoUrl);
+
             // Map download and conversion request and convert to mp3
             var conversionRequest = new AudioConversionRequest(
                 audioStreamFilePath,
@@ -32,6 +39,7 @@ public abstract class AudioDownloadService
             );
 
             var audioOutputFilePath = await ConvertToMp3Async(conversionRequest);
+
             if (!string.IsNullOrEmpty(videoInfo.ThumbnailUrl))
             {
                 // Embed cover image
@@ -56,26 +64,26 @@ public abstract class AudioDownloadService
 
     protected virtual Task<VideoModel> GetVideoInfoAsync(string videoUrl)
     {
-        return _videoInfoProvider.GetInfoAsync(videoUrl);
+        return _videoInfoProvider.GetInfoAsync(videoUrl, _progress);
     }
 
     protected virtual Task<string> DownloadAudioStreamAsync(string videoUrl)
     {
-        return _videoInfoProvider.DownloadAudioStreamAsync(videoUrl);
+        return _videoInfoProvider.DownloadAudioStreamAsync(videoUrl, _progress);
     }
 
     protected virtual Task<string> ConvertToMp3Async(AudioConversionRequest request)
     {
-        return _audioConverter.ConvertToMp3Async(request);
+        return _audioConverter.ConvertToMp3Async(request, _progress);
     }
 
     protected virtual Task<string> GetCoverImageAsync(string videoUrl)
     {
-        return _audioCoverEmbedder.GetCoverImageAsync(videoUrl);
+        return _audioCoverEmbedder.GetCoverImageAsync(videoUrl, _progress);
     }
 
     protected virtual void EmbedCover(string audioFilePath, string coverImagePath)
     {
-        _audioCoverEmbedder.EmbedCover(audioFilePath, coverImagePath);
+        _audioCoverEmbedder.EmbedCover(audioFilePath, coverImagePath, _progress);
     }
 }
