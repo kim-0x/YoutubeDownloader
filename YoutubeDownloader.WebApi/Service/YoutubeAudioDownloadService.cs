@@ -7,8 +7,9 @@ public class YoutubeAudioDownloadService : AudioDownloadService
         IAudioConverter audioConverter,
         IVideoInfoProvider videoInfoProvider,        
         IOutputStorage outputStorage,
-        IStageNotifier stageNotifier)
-        : base(videoInfoProvider, audioConverter, audioCoverEmbedder)
+        IStageNotifier stageNotifier,
+        IProgress<double> progressNotifier)
+        : base(videoInfoProvider, audioConverter, audioCoverEmbedder, progressNotifier)
     {
         _stageNotifier = stageNotifier;
         _outputStorage = outputStorage;

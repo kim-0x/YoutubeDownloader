@@ -1,22 +1,26 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import * as signalR from '@microsoft/signalr';
-import { IReport, formatReport } from './model/report.model';
+import { IProgressMessage, IReport } from './model/report.model';
+import { NgFor, NgIf, PercentPipe } from '@angular/common';
 
 const HUB_URL = 'https://localhost:7085/hubs/notification';
 const API_URL = 'https://localhost:7085/api/download';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [NgFor, NgIf, PercentPipe, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
-  @ViewChild('outputContainer') outputContainer!: ElementRef<HTMLDivElement>;
-
   videoUrl = '';
-  log = '';
+  currentStep: number = 0;
+  progressMessage: Map<number, IProgressMessage> = new Map<
+    number,
+    IProgressMessage
+  >();
+  status: string = '';
 
   constructor() {
     let connection = new signalR.HubConnectionBuilder()
@@ -41,12 +45,23 @@ export class AppComponent implements OnInit {
     this.videoUrl = input.value;
   }
 
+  get progressMessageKeys(): number[] {
+    return Array.from(this.progressMessage.keys()).sort();
+  }
+
+  private clearProgressMessages() {
+    this.currentStep = 0;
+    this.progressMessage.clear();
+    this.status = '';
+  }
+
   download() {
     if (!this.videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
     try {
+      this.clearProgressMessages();
       fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -66,10 +81,21 @@ export class AppComponent implements OnInit {
   }
 
   private addResult(report: IReport) {
-    this.log += formatReport(report);
-    setTimeout(() => {
-      this.outputContainer.nativeElement.scrollTop =
-        this.outputContainer.nativeElement.scrollHeight;
-    }, 100);
+    if (report.type === 'progress') {
+      if (report.step) {
+        this.currentStep = report.step;
+        this.progressMessage.set(report.step, {
+          message: report.message,
+        });
+      } else {
+        var msg = this.progressMessage.get(this.currentStep);
+        if (msg) {
+          msg.percentage = Number(report.message);
+          this.progressMessage.set(this.currentStep, msg);
+        }
+      }
+    } else {
+      this.status = report.message;
+    }
   }
 }

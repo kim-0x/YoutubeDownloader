@@ -15,6 +15,7 @@ builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
     .AddSingleton<IVideoInfoProvider, VideoInfoProvider>()
     .AddTransient<AudioDownloadService, YoutubeAudioDownloadService>();
 builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
+builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
 builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
 
 builder.Services.AddSignalR().AddJsonProtocol(option =>
