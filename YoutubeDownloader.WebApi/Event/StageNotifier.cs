@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.SignalR;
 
-public class ProgressNotifier : IProgressNotifier
+public class StageNotifier : IStageNotifier
 {
     private readonly IHubContext<NotificationHub> _hubContext;
 
-    public ProgressNotifier(IHubContext<NotificationHub> hubContext)
+    public StageNotifier(IHubContext<NotificationHub> hubContext)
     {
         _hubContext = hubContext;
     }
-
-    public async Task ReportProgressAsync(ReportModel report)
+    
+    public async Task ReportStageAsync(ReportModel report)
     {
         await _hubContext.Clients.All.SendAsync("download", report);
     }
