@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 
-public class ProgressNotifier : IProgressNotifier
+public class ProgressNotifier : IProgress<double>
 {
     private readonly IHubContext<NotificationHub> _hubContext;
 
@@ -9,8 +9,8 @@ public class ProgressNotifier : IProgressNotifier
         _hubContext = hubContext;
     }
 
-    public async Task ReportProgressAsync(ReportModel report)
+    public async void Report(double value)
     {
-        await _hubContext.Clients.All.SendAsync("download", report);
+        await _hubContext.Clients.All.SendAsync("download", new ReportModel(ReportType.Progress, $"{value}"));
     }
 }

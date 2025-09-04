@@ -1,5 +1,5 @@
 public interface IVideoInfoProvider
 {
-    Task<VideoModel> GetInfoAsync(string videoUrl);
-    Task<string> DownloadAudioStreamAsync(string videoUrl);
+    Task<VideoModel> GetInfoAsync(string videoUrl, IProgress<double>? progress = null);
+    Task<string> DownloadAudioStreamAsync(string videoUrl, IProgress<double>? progress = null);
 }

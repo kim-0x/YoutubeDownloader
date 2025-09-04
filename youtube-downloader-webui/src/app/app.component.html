@@ -4,9 +4,13 @@
   <input size="40" [value]="videoUrl" (change)="onChange($event)" />
 </label>
 <button (click)="download()">Download</button>
-<div
-  [innerHtml]="log"
-  #outputContainer
-  style="margin-top: 12px; height: 240px; overflow: auto"
-></div>
+<div style="margin-top: 12px; height: 240px; overflow: auto">
+  <ng-container *ngFor="let key of progressMessageKeys">
+    <label *ngIf="progressMessage.get(key)"
+      >{{ progressMessage.get(key)?.message }}
+      {{ progressMessage.get(key)?.percentage | percent : "1.2-2" }}</label
+    ><br />
+  </ng-container>
+  <label *ngIf="status">{{ status }}</label>
+</div>
 <router-outlet></router-outlet>

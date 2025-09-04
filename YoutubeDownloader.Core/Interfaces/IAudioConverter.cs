@@ -1,4 +1,4 @@
 public interface IAudioConverter
 {
-    Task<string> ConvertToMp3Async(AudioConversionRequest request);
+    Task<string> ConvertToMp3Async(AudioConversionRequest request, IProgress<double>? progress = null);
 }
