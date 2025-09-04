@@ -54,6 +54,7 @@ export class AppComponent implements OnInit {
     this.currentStep = 0;
     this.progressMessage.clear();
     this.status = '';
+    this.outputAudioLink = undefined;
   }
 
   download() {
