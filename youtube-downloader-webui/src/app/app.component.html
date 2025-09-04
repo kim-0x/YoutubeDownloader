@@ -11,6 +11,12 @@
       {{ progressMessage.get(key)?.percentage | percent : "1.2-2" }}</label
     ><br />
   </ng-container>
+  <ng-container *ngIf="outputAudioLink">
+    <label style="color: green">Download Completed:</label>
+    <a [href]="outputAudioLink" target="_blank" download="audio.mp3"
+      >Play Audio</a
+    >
+  </ng-container>
   <label *ngIf="status">{{ status }}</label>
 </div>
 <router-outlet></router-outlet>

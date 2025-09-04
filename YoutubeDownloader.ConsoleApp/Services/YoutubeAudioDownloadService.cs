@@ -4,9 +4,9 @@ public class YoutubeAudioDownloadService : AudioDownloadService
         IAudioCoverEmbedder audioCoverEmbedder,
         IAudioConverter audioConverter,
         IVideoInfoProvider videoInfoProvider,
-        IProgress<double>? progress = null) 
+        IProgress<double>? progress = null)
         : base(videoInfoProvider, audioConverter, audioCoverEmbedder, progress)
-    {}
+    { }
 
     protected override Task<string> DownloadAudioStreamAsync(string videoUrl)
     {
@@ -36,5 +36,11 @@ public class YoutubeAudioDownloadService : AudioDownloadService
     {
         Console.WriteLine("Embedding cover image into MP3 file...");
         base.EmbedCover(audioOutputFilePath, coverImagePath);
+    }
+    
+    protected override void OnCompleted(string audioFilePath)
+    {
+        Console.WriteLine($"Audio download and processing completed: {audioFilePath}");
+        base.OnCompleted(audioFilePath);
     }
 }

@@ -46,6 +46,8 @@ public abstract class AudioDownloadService
                 coverImagePath = await GetCoverImageAsync(videoInfo.ThumbnailUrl);
                 EmbedCover(audioOutputFilePath, coverImagePath);
             }
+
+            OnCompleted(audioOutputFilePath);
         }
         catch (Exception ex)
         {
@@ -85,5 +87,10 @@ public abstract class AudioDownloadService
     protected virtual void EmbedCover(string audioFilePath, string coverImagePath)
     {
         _audioCoverEmbedder.EmbedCover(audioFilePath, coverImagePath, _progress);
+    }
+
+    protected virtual void OnCompleted(string audioFilePath)
+    {
+        // Optionally override to handle completion (e.g., notify user)
     }
 }

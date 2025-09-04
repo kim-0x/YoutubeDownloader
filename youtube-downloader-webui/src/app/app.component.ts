@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
     IProgressMessage
   >();
   status: string = '';
+  outputAudioLink?: string;
 
   constructor() {
     let connection = new signalR.HubConnectionBuilder()
@@ -53,6 +54,7 @@ export class AppComponent implements OnInit {
     this.currentStep = 0;
     this.progressMessage.clear();
     this.status = '';
+    this.outputAudioLink = undefined;
   }
 
   download() {
@@ -95,7 +97,11 @@ export class AppComponent implements OnInit {
         }
       }
     } else {
-      this.status = report.message;
+      if (report.type === 'completed') {
+        this.outputAudioLink = report.message;
+      } else {
+        this.status = report.message;
+      }
     }
   }
 }

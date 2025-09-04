@@ -5,7 +5,7 @@ public class YoutubeAudioDownloadService : AudioDownloadService
     public YoutubeAudioDownloadService(
         IAudioCoverEmbedder audioCoverEmbedder,
         IAudioConverter audioConverter,
-        IVideoInfoProvider videoInfoProvider,        
+        IVideoInfoProvider videoInfoProvider,
         IOutputStorage outputStorage,
         IStageNotifier stageNotifier,
         IProgress<double> progressNotifier)
@@ -33,7 +33,8 @@ public class YoutubeAudioDownloadService : AudioDownloadService
             await _stageNotifier.ReportStageAsync(
                 new ReportModel(ReportType.Progress, "Converting audio to MP3...", 3, 5));
             return await base.ConvertToMp3Async(request);
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             await _stageNotifier.ReportStageAsync(
                 new ReportModel(ReportType.Error, $"Error during conversion: {ex.Message}"));
@@ -50,10 +51,13 @@ public class YoutubeAudioDownloadService : AudioDownloadService
     {
         await _stageNotifier.ReportStageAsync(
             new ReportModel(ReportType.Progress, "Embedding cover image...", 5, 5));
-        base.EmbedCover(audioOutputFilePath, coverImagePath);
-
-        var hostedAudioPath = _outputStorage.GetFileInPublicUrl(audioOutputFilePath);
+        base.EmbedCover(audioOutputFilePath, coverImagePath);       
+    }
+    
+    protected override async void OnCompleted(string audioFilePath)
+    {
+        var hostedAudioPath = _outputStorage.GetFileInPublicUrl(audioFilePath);
         await _stageNotifier.ReportStageAsync(
-            new ReportModel(ReportType.Completed, $"Download completed. {hostedAudioPath}"));
+            new ReportModel(ReportType.Completed, hostedAudioPath));
     }
 }
