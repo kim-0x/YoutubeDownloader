@@ -5,6 +5,7 @@ public class YoutubeAudioDownloadService : AudioDownloadService
     private readonly IStageNotifier _stageNotifier;
     private readonly IOutputStorage _outputStorage;
     private readonly IMemoryCache _memoryCache;
+    private readonly IProgress<double> _progressNotifier;
     public YoutubeAudioDownloadService(
         IAudioCoverEmbedder audioCoverEmbedder,
         IAudioConverter audioConverter,
@@ -18,6 +19,7 @@ public class YoutubeAudioDownloadService : AudioDownloadService
         _stageNotifier = stageNotifier;
         _outputStorage = outputStorage;
         _memoryCache = memoryCache;
+        _progressNotifier = progressNotifier;
     }
     
     protected override async Task<VideoModel> GetVideoInfoAsync(string videoUrl)
@@ -25,15 +27,19 @@ public class YoutubeAudioDownloadService : AudioDownloadService
         await _stageNotifier.ReportStageAsync(
             new ReportModel(ReportType.Progress, "Fetching video information...", 1, 5));
 
+        _progressNotifier.Report(0.0);
         if (_memoryCache.TryGetValue<VideoModel>(videoUrl, out var videoInfo))
         {
             if (videoInfo is not null)
             {
+                _progressNotifier.Report(0.1);
                 return videoInfo;
             }
         }
 
-        return await base.GetVideoInfoAsync(videoUrl);
+        videoInfo = await base.GetVideoInfoAsync(videoUrl);
+        _progressNotifier.Report(0.1);
+        return videoInfo;
     }
     protected override async Task<string> DownloadAudioStreamAsync(string videoUrl)
     {
