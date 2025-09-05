@@ -1,9 +1,17 @@
 <h1>Youtube Download Client</h1>
 <label
   >Youtube URL:
-  <input size="40" [value]="videoUrl" (change)="onChange($event)" />
+  <input size="40" [value]="videoUrl" (change)="onUrlChange($event)" />
 </label>
-<button (click)="download()">Download</button>
+<button (click)="download()">Download</button> <br />
+<label
+  >Video Title:
+  <input size="40" [value]="videoTitle" (change)="onTitleChange($event)" />
+</label>
+<button (click)="getTitle()">Get Title</button>
+<button (click)="updateTitle()">Update Title</button><br />
+<label *ngIf="updateTitleMessage">{{ updateTitleMessage }}</label
+><br />
 <div style="margin-top: 12px; height: 240px; overflow: auto">
   <ng-container *ngFor="let key of progressMessageKeys">
     <label *ngIf="progressMessage.get(key)"
