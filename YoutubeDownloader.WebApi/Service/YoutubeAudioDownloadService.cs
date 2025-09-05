@@ -1,24 +1,45 @@
+using Microsoft.Extensions.Caching.Memory;
+
 public class YoutubeAudioDownloadService : AudioDownloadService
 {
     private readonly IStageNotifier _stageNotifier;
     private readonly IOutputStorage _outputStorage;
+    private readonly IMemoryCache _memoryCache;
+    private readonly IProgress<double> _progressNotifier;
     public YoutubeAudioDownloadService(
         IAudioCoverEmbedder audioCoverEmbedder,
         IAudioConverter audioConverter,
         IVideoInfoProvider videoInfoProvider,
         IOutputStorage outputStorage,
         IStageNotifier stageNotifier,
-        IProgress<double> progressNotifier)
+        IProgress<double> progressNotifier,
+        IMemoryCache memoryCache)
         : base(videoInfoProvider, audioConverter, audioCoverEmbedder, progressNotifier)
     {
         _stageNotifier = stageNotifier;
         _outputStorage = outputStorage;
+        _memoryCache = memoryCache;
+        _progressNotifier = progressNotifier;
     }
+    
     protected override async Task<VideoModel> GetVideoInfoAsync(string videoUrl)
     {
         await _stageNotifier.ReportStageAsync(
             new ReportModel(ReportType.Progress, "Fetching video information...", 1, 5));
-        return await base.GetVideoInfoAsync(videoUrl);
+
+        _progressNotifier.Report(0.0);
+        if (_memoryCache.TryGetValue<VideoModel>(videoUrl, out var videoInfo))
+        {
+            if (videoInfo is not null)
+            {
+                _progressNotifier.Report(0.1);
+                return videoInfo;
+            }
+        }
+
+        videoInfo = await base.GetVideoInfoAsync(videoUrl);
+        _progressNotifier.Report(0.1);
+        return videoInfo;
     }
     protected override async Task<string> DownloadAudioStreamAsync(string videoUrl)
     {

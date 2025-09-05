@@ -4,6 +4,8 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddMemoryCache();
+
 builder.Services.Configure<DownloadSetting>(
     builder.Configuration.GetSection("DownloadSettings"));
 // Add services to the container.

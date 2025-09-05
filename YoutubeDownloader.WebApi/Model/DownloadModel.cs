@@ -3,3 +3,8 @@ public record DownloadModel (
    string? StartAt = null,
    string? EndAt = null 
 );
+
+public record VideoDto (
+   string VideoUrl,
+   string Title
+);

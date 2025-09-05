@@ -5,7 +5,8 @@ import { IProgressMessage, IReport } from './model/report.model';
 import { NgFor, NgIf, PercentPipe } from '@angular/common';
 
 const HUB_URL = 'https://localhost:7085/hubs/notification';
-const API_URL = 'https://localhost:7085/api/download';
+const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
+const VIDEO_API_URL = 'https://localhost:7085/api/video';
 
 @Component({
   selector: 'app-root',
@@ -15,12 +16,14 @@ const API_URL = 'https://localhost:7085/api/download';
 })
 export class AppComponent implements OnInit {
   videoUrl = '';
+  videoTitle = '';
   currentStep: number = 0;
   progressMessage: Map<number, IProgressMessage> = new Map<
     number,
     IProgressMessage
   >();
   status: string = '';
+  updateTitleMessage = '';
   outputAudioLink?: string;
 
   constructor() {
@@ -41,9 +44,66 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onChange(event: Event) {
+  onUrlChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.videoUrl = input.value;
+  }
+
+  onTitleChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.videoTitle = input.value;
+  }
+
+  getTitle() {
+    if (!this.videoUrl) {
+      alert('Please enter a valid URL.');
+      return;
+    }
+    try {
+      fetch(`${VIDEO_API_URL}?videoUrl=${encodeURIComponent(this.videoUrl)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((data) => data.json())
+        .then((data: { videoUrl: string; title: string }) => {
+          this.videoTitle = data.title;
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    } catch (err) {
+      console.log('download error: ' + err);
+    }
+  }
+
+  updateTitle() {
+    if (!this.videoUrl || !this.videoTitle) {
+      alert('Please enter a valid URL and Title.');
+      return;
+    }
+    try {
+      fetch(VIDEO_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          videoUrl: this.videoUrl,
+          title: this.videoTitle,
+        }),
+      })
+        .then((data) => {
+          console.log('Success', data);
+          this.updateTitleMessage = 'Title updated successfully.';
+        })
+        .catch((error) => {
+          console.error('Error: ', error);
+        });
+    } catch (err) {
+      console.log('download error: ' + err);
+    }
   }
 
   get progressMessageKeys(): number[] {
@@ -54,6 +114,7 @@ export class AppComponent implements OnInit {
     this.currentStep = 0;
     this.progressMessage.clear();
     this.status = '';
+    this.updateTitleMessage = '';
     this.outputAudioLink = undefined;
   }
 
@@ -64,7 +125,7 @@ export class AppComponent implements OnInit {
     }
     try {
       this.clearProgressMessages();
-      fetch(API_URL, {
+      fetch(DOWNLOAD_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
