@@ -8,10 +8,6 @@
   >Video Title:
   <input size="40" [value]="videoTitle" (change)="onTitleChange($event)" />
 </label>
-<button (click)="getTitle()">Get Title</button>
-<button (click)="updateTitle()">Update Title</button><br />
-<label *ngIf="updateTitleMessage">{{ updateTitleMessage }}</label
-><br />
 <div style="margin-top: 12px; height: 240px; overflow: auto">
   <ng-container *ngFor="let key of progressMessageKeys">
     <label *ngIf="progressMessage.get(key)"
