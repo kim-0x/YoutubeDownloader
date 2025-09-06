@@ -7,5 +7,6 @@ public record DownloadModel (
 
 public record VideoDto (
    string VideoUrl,
-   string Title
+   string Title,
+   TimeSpan? Duration
 );

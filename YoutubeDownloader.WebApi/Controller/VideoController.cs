@@ -30,7 +30,7 @@ public class VideoController : ControllerBase
 
             _memoryCache.Set(videoUrl, videoInfo, cacheEntryOptions);
 
-            return Ok(new VideoDto(videoUrl, videoInfo.Title));
+            return Ok(new VideoDto(videoUrl, videoInfo.Title, videoInfo.Duration));
         }
         catch (Exception ex)
         {

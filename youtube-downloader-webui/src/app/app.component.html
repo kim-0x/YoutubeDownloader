@@ -8,6 +8,15 @@
   >Video Title:
   <input size="40" [value]="videoTitle" (change)="onTitleChange($event)" />
 </label>
+<br />
+<label
+  >Start At:
+  <input size="20" [value]="startAt" (change)="onStartAtChange($event)" />
+</label>
+<label
+  >End At:
+  <input size="20" [value]="endAt" (change)="onEndAtChange($event)" />
+</label>
 <div style="margin-top: 12px; height: 240px; overflow: auto">
   <ng-container *ngFor="let key of progressMessageKeys">
     <label *ngIf="progressMessage.get(key)"
