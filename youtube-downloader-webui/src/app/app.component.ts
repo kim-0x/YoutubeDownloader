@@ -17,6 +17,8 @@ const VIDEO_API_URL = 'https://localhost:7085/api/video';
 export class AppComponent implements OnInit {
   videoUrl = '';
   videoTitle = '';
+  startAt = '';
+  endAt = '';
   currentStep: number = 0;
   progressMessage: Map<number, IProgressMessage> = new Map<
     number,
@@ -56,6 +58,16 @@ export class AppComponent implements OnInit {
     this.videoTitle = input.value;
   }
 
+  onStartAtChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.startAt = input.value;
+  }
+
+  onEndAtChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.endAt = input.value;
+  }
+
   getTitle() {
     if (!this.videoUrl) {
       alert('Please enter a valid URL.');
@@ -69,8 +81,10 @@ export class AppComponent implements OnInit {
         },
       })
         .then((data) => data.json())
-        .then((data: { videoUrl: string; title: string }) => {
+        .then((data: { videoUrl: string; title: string; duration: string }) => {
           this.videoTitle = data.title;
+          this.startAt = '00:00:00';
+          this.endAt = data.duration;
         })
         .catch((error) => {
           console.error('Error: ', error);
@@ -106,6 +120,8 @@ export class AppComponent implements OnInit {
         body: JSON.stringify({
           videoUrl: this.videoUrl,
           title: this.videoTitle,
+          startAt: this.startAt,
+          endAt: this.endAt,
         }),
       })
         .then((data) => {
