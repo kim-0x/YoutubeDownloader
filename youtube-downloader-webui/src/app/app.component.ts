@@ -23,7 +23,6 @@ export class AppComponent implements OnInit {
     IProgressMessage
   >();
   status: string = '';
-  updateTitleMessage = '';
   outputAudioLink?: string;
 
   constructor() {
@@ -47,6 +46,9 @@ export class AppComponent implements OnInit {
   onUrlChange(event: Event) {
     const input = event.target as HTMLInputElement;
     this.videoUrl = input.value;
+    if (this.videoUrl) {
+      this.getTitle();
+    }
   }
 
   onTitleChange(event: Event) {
@@ -78,34 +80,6 @@ export class AppComponent implements OnInit {
     }
   }
 
-  updateTitle() {
-    if (!this.videoUrl || !this.videoTitle) {
-      alert('Please enter a valid URL and Title.');
-      return;
-    }
-    try {
-      fetch(VIDEO_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          videoUrl: this.videoUrl,
-          title: this.videoTitle,
-        }),
-      })
-        .then((data) => {
-          console.log('Success', data);
-          this.updateTitleMessage = 'Title updated successfully.';
-        })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
-    } catch (err) {
-      console.log('download error: ' + err);
-    }
-  }
-
   get progressMessageKeys(): number[] {
     return Array.from(this.progressMessage.keys()).sort();
   }
@@ -114,7 +88,6 @@ export class AppComponent implements OnInit {
     this.currentStep = 0;
     this.progressMessage.clear();
     this.status = '';
-    this.updateTitleMessage = '';
     this.outputAudioLink = undefined;
   }
 
@@ -130,7 +103,10 @@ export class AppComponent implements OnInit {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ videoUrl: this.videoUrl }),
+        body: JSON.stringify({
+          videoUrl: this.videoUrl,
+          title: this.videoTitle,
+        }),
       })
         .then((data) => {
           console.log('Success', data);
