@@ -30,6 +30,6 @@
       >Play Audio</a
     >
   </ng-container>
-  <label *ngIf="status">{{ status }}</label>
+  <label style="color: red" *ngIf="errorMessage">{{ errorMessage }}</label>
 </div>
 <router-outlet></router-outlet>

@@ -3,7 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { IProgressMessage, IReport } from './model/report.model';
 import { NgFor, NgIf, PercentPipe } from '@angular/common';
 import { DownloadService } from './service/download.service';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 
 const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
 const VIDEO_API_URL = 'https://localhost:7085/api/video';
@@ -19,19 +19,26 @@ export class AppComponent implements OnInit, OnDestroy {
   videoTitle = '';
   startAt = '';
   endAt = '';
-  currentStep: number = 0;
   progressMessage: Map<number, IProgressMessage> = new Map<
     number,
     IProgressMessage
   >();
-  status: string = '';
+  errorMessage: string = '';
   outputAudioLink?: string;
   private readonly _downloadService = inject(DownloadService);
   private readonly _subscription = new Subscription();
 
   ngOnInit(): void {
     this._subscription.add(
-      this._downloadService.report$.subscribe(this.addResult.bind(this))
+      this._downloadService.report$
+        .pipe(filter((report) => report.type !== 'progress'))
+        .subscribe(this.addResult.bind(this))
+    );
+
+    this._subscription.add(
+      this._downloadService.progress$.subscribe((progress) => {
+        this.progressMessage = progress;
+      })
     );
   }
 
@@ -89,9 +96,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private clearProgressMessages() {
-    this.currentStep = 0;
     this.progressMessage.clear();
-    this.status = '';
+    this.errorMessage = '';
     this.outputAudioLink = undefined;
   }
 
@@ -126,25 +132,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private addResult(report: IReport) {
-    if (report.type === 'progress') {
-      if (report.step) {
-        this.currentStep = report.step;
-        this.progressMessage.set(report.step, {
-          message: report.message,
-        });
-      } else {
-        var msg = this.progressMessage.get(this.currentStep);
-        if (msg) {
-          msg.percentage = Number(report.message);
-          this.progressMessage.set(this.currentStep, msg);
-        }
-      }
-    } else {
-      if (report.type === 'completed') {
-        this.outputAudioLink = report.message;
-      } else {
-        this.status = report.message;
-      }
+    if (report.type === 'completed') {
+      this.outputAudioLink = report.message;
+    } else if (report.type === 'error') {
+      this.errorMessage = report.message;
     }
   }
 
