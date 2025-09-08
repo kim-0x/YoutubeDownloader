@@ -50,7 +50,7 @@ public class DownloadController : ControllerBase
             }
 
             var _ = Task.Run(async () => await _audioDownloadService.ExecuteAsync(request));
-            return Ok("Request accepted. Processing download.");
+            return Ok(new { Message = "Request accepted. Processing download." });
         }
         catch (Exception ex)
         {
