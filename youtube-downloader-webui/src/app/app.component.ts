@@ -3,10 +3,9 @@ import { RouterOutlet } from '@angular/router';
 import { IProgressMessage, IReport } from './model/report.model';
 import { NgFor, NgIf, PercentPipe } from '@angular/common';
 import { ReportService } from './service/report.service';
-import { filter, Subscription } from 'rxjs';
-
-const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
-const VIDEO_API_URL = 'https://localhost:7085/api/video';
+import { filter, firstValueFrom, Subscription } from 'rxjs';
+import { DownloadService } from './service/download.service';
+import { VideoService } from './service/video.service';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
   outputAudioLink?: string;
   private readonly _reportService = inject(ReportService);
+  private readonly _downloadService = inject(DownloadService);
+  private readonly _videoService = inject(VideoService);
   private readonly _subscription = new Subscription();
 
   ngOnInit(): void {
@@ -46,7 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     this.videoUrl = input.value;
     if (this.videoUrl) {
-      this.getTitle();
+      this.getInfo();
     }
   }
 
@@ -65,29 +66,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.endAt = input.value;
   }
 
-  getTitle() {
+  async getInfo() {
     if (!this.videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
+
     try {
-      fetch(`${VIDEO_API_URL}?videoUrl=${encodeURIComponent(this.videoUrl)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((data) => data.json())
-        .then((data: { videoUrl: string; title: string; duration: string }) => {
-          this.videoTitle = data.title;
-          this.startAt = '00:00:00';
-          this.endAt = data.duration;
-        })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
+      const result = await firstValueFrom(
+        this._videoService.getInfo(this.videoUrl)
+      );
+
+      this.videoTitle = result.title;
+      this.startAt = '00:00:00';
+      this.endAt = result.duration;
     } catch (err) {
-      console.log('download error: ' + err);
+      console.error('Get video info error: ' + err);
     }
   }
 
@@ -101,33 +95,25 @@ export class AppComponent implements OnInit, OnDestroy {
     this.outputAudioLink = undefined;
   }
 
-  download() {
+  async download() {
     if (!this.videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
+
     try {
       this.clearProgressMessages();
-      fetch(DOWNLOAD_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const result = await firstValueFrom(
+        this._downloadService.triggerDownload({
           videoUrl: this.videoUrl,
           title: this.videoTitle,
           startAt: this.startAt,
           endAt: this.endAt,
-        }),
-      })
-        .then((data) => {
-          console.log('Success', data);
         })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
+      );
+      console.log('Download initiated, ' + result.message);
     } catch (err) {
-      console.log('download error: ' + err);
+      console.error('Download error: ' + err);
     }
   }
 
