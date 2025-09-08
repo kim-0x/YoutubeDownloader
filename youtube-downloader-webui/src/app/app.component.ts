@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import * as signalR from '@microsoft/signalr';
 import { IProgressMessage, IReport } from './model/report.model';
 import { NgFor, NgIf, PercentPipe } from '@angular/common';
+import { DownloadService } from './service/download.service';
+import { Subscription } from 'rxjs';
 
-const HUB_URL = 'https://localhost:7085/hubs/notification';
 const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
 const VIDEO_API_URL = 'https://localhost:7085/api/video';
 
@@ -14,7 +14,7 @@ const VIDEO_API_URL = 'https://localhost:7085/api/video';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   videoUrl = '';
   videoTitle = '';
   startAt = '';
@@ -26,24 +26,14 @@ export class AppComponent implements OnInit {
   >();
   status: string = '';
   outputAudioLink?: string;
+  private readonly _downloadService = inject(DownloadService);
+  private readonly _subscription = new Subscription();
 
-  constructor() {
-    let connection = new signalR.HubConnectionBuilder()
-      .withUrl(HUB_URL)
-      .withAutomaticReconnect()
-      .build();
-
-    connection.on('status', (msg) => console.log(msg));
-    connection.on('download', (report: IReport) => this.addResult(report));
-    try {
-      connection.start();
-      console.log('Connected to hub.');
-    } catch (err) {
-      console.log(err);
-    }
+  ngOnInit(): void {
+    this._subscription.add(
+      this._downloadService.report$.subscribe(this.addResult.bind(this))
+    );
   }
-
-  ngOnInit(): void {}
 
   onUrlChange(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -156,5 +146,9 @@ export class AppComponent implements OnInit {
         this.status = report.message;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }
