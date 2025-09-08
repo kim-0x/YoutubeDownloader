@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { IProgressMessage, IReport } from './model/report.model';
 import { NgFor, NgIf, PercentPipe } from '@angular/common';
-import { DownloadService } from './service/download.service';
+import { ReportService } from './service/report.service';
 import { filter, Subscription } from 'rxjs';
 
 const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
@@ -25,18 +25,18 @@ export class AppComponent implements OnInit, OnDestroy {
   >();
   errorMessage: string = '';
   outputAudioLink?: string;
-  private readonly _downloadService = inject(DownloadService);
+  private readonly _reportService = inject(ReportService);
   private readonly _subscription = new Subscription();
 
   ngOnInit(): void {
     this._subscription.add(
-      this._downloadService.report$
+      this._reportService.stage$
         .pipe(filter((report) => report.type !== 'progress'))
         .subscribe(this.addResult.bind(this))
     );
 
     this._subscription.add(
-      this._downloadService.progress$.subscribe((progress) => {
+      this._reportService.progress$.subscribe((progress) => {
         this.progressMessage = progress;
       })
     );

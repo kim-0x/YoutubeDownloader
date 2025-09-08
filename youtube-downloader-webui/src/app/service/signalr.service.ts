@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { DownloadService } from './download.service';
+import { ReportService } from './report.service';
 
 const HUB_URL = 'https://localhost:7085/hubs/notification';
 
@@ -9,7 +9,7 @@ const HUB_URL = 'https://localhost:7085/hubs/notification';
 })
 export class SignalRService {
   private _connection: signalR.HubConnection;
-  private readonly _downloadService = inject(DownloadService);
+  private readonly _reportService = inject(ReportService);
 
   constructor() {
     this._connection = new signalR.HubConnectionBuilder()
@@ -19,7 +19,7 @@ export class SignalRService {
 
     this._connection.on('status', (message) => console.log(message));
     this._connection.on('download', (report) =>
-      this._downloadService.addReport(report)
+      this._reportService.addReport(report)
     );
   }
 

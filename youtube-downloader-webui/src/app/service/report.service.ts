@@ -5,8 +5,8 @@ import { IProgressMessage, IReport } from '../model/report.model';
 @Injectable({
   providedIn: 'root',
 })
-export class DownloadService {
-  private readonly _report$: Subject<IReport> = new Subject<IReport>();
+export class ReportService {
+  private readonly _stage$: Subject<IReport> = new Subject<IReport>();
   private readonly _progress$: Subject<Map<number, IProgressMessage>> =
     new Subject<Map<number, IProgressMessage>>();
   private _currentStep: number = 0;
@@ -16,11 +16,11 @@ export class DownloadService {
     IProgressMessage
   >();
 
-  public report$ = this._report$.asObservable();
+  public stage$ = this._stage$.asObservable();
   public progress$ = this._progress$.asObservable();
 
   public addReport(report: IReport) {
-    this._report$.next(report);
+    this._stage$.next(report);
     if (report.type === 'progress') {
       this.addProgress(report);
     } else if (report.type === 'start') {
