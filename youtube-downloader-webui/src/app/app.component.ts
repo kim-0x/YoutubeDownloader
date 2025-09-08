@@ -6,28 +6,39 @@ import { ReportService } from './service/report.service';
 import { filter, firstValueFrom, Subscription } from 'rxjs';
 import { DownloadService } from './service/download.service';
 import { VideoService } from './service/video.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [NgFor, NgIf, PercentPipe, RouterOutlet],
+  imports: [NgFor, NgIf, PercentPipe, RouterOutlet, ReactiveFormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit, OnDestroy {
-  videoUrl = '';
-  videoTitle = '';
-  startAt = '';
-  endAt = '';
+  // input -> read&write
+  downloadForm: FormGroup;
+  // output -> read
   progressMessage: Map<number, IProgressMessage> = new Map<
     number,
     IProgressMessage
   >();
   errorMessage: string = '';
   outputAudioLink?: string;
+  // service
   private readonly _reportService = inject(ReportService);
   private readonly _downloadService = inject(DownloadService);
   private readonly _videoService = inject(VideoService);
+  private readonly _formBuilder = inject(FormBuilder);
   private readonly _subscription = new Subscription();
+
+  constructor() {
+    this.downloadForm = this._formBuilder.group({
+      videoUrl: [''],
+      title: [''],
+      startAt: [''],
+      endAt: [''],
+    });
+  }
 
   ngOnInit(): void {
     this._subscription.add(
@@ -41,45 +52,28 @@ export class AppComponent implements OnInit, OnDestroy {
         this.progressMessage = progress;
       })
     );
+
+    this._subscription.add(
+      this.downloadForm.get('videoUrl')?.valueChanges.subscribe((url) => {
+        if (url) this.getInfo(url);
+      })
+    );
   }
 
-  onUrlChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.videoUrl = input.value;
-    if (this.videoUrl) {
-      this.getInfo();
-    }
-  }
-
-  onTitleChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.videoTitle = input.value;
-  }
-
-  onStartAtChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.startAt = input.value;
-  }
-
-  onEndAtChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.endAt = input.value;
-  }
-
-  async getInfo() {
-    if (!this.videoUrl) {
+  async getInfo(url: string) {
+    if (!url) {
       alert('Please enter a valid URL.');
       return;
     }
 
     try {
-      const result = await firstValueFrom(
-        this._videoService.getInfo(this.videoUrl)
-      );
+      const result = await firstValueFrom(this._videoService.getInfo(url));
 
-      this.videoTitle = result.title;
-      this.startAt = '00:00:00';
-      this.endAt = result.duration;
+      this.downloadForm.patchValue({
+        title: result.title,
+        startAt: '00:00:00',
+        endAt: result.duration,
+      });
     } catch (err) {
       console.error('Get video info error: ' + err);
     }
@@ -96,7 +90,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   async download() {
-    if (!this.videoUrl) {
+    const { videoUrl, title, startAt, endAt } = this.downloadForm.value;
+
+    if (!videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
@@ -105,10 +101,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.clearProgressMessages();
       const result = await firstValueFrom(
         this._downloadService.triggerDownload({
-          videoUrl: this.videoUrl,
-          title: this.videoTitle,
-          startAt: this.startAt,
-          endAt: this.endAt,
+          videoUrl,
+          title,
+          startAt,
+          endAt,
         })
       );
       console.log('Download initiated, ' + result.message);

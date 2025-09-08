@@ -1,22 +1,25 @@
 <h1>YouTube Download Client</h1>
-<label
-  >YouTube URL:
-  <input size="40" [value]="videoUrl" (change)="onUrlChange($event)" />
-</label>
-<button (click)="download()">Download</button> <br />
-<label
-  >Video Title:
-  <input size="40" [value]="videoTitle" (change)="onTitleChange($event)" />
-</label>
-<br />
-<label
-  >Start At:
-  <input size="20" [value]="startAt" (change)="onStartAtChange($event)" />
-</label>
-<label
-  >End At:
-  <input size="20" [value]="endAt" (change)="onEndAtChange($event)" />
-</label>
+<form [formGroup]="downloadForm">
+  <label
+    >YouTube URL:
+    <input formControlName="videoUrl" size="40" />
+  </label>
+  <button (click)="download()">Download</button> <br />
+  <label
+    >Video Title:
+    <input size="40" formControlName="title" />
+  </label>
+  <br />
+  <label
+    >Start At:
+    <input size="20" formControlName="startAt" />
+  </label>
+  <label
+    >End At:
+    <input size="20" formControlName="endAt" />
+  </label>
+</form>
+
 <div style="margin-top: 12px; height: 240px; overflow: auto">
   <ng-container *ngFor="let key of progressMessageKeys">
     <label *ngIf="progressMessage.get(key)"
