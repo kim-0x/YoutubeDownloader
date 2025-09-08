@@ -21,6 +21,12 @@ public class YoutubeAudioDownloadService : AudioDownloadService
         _memoryCache = memoryCache;
         _progressNotifier = progressNotifier;
     }
+
+    protected override async void OnStart()
+    {
+        await _stageNotifier.ReportStageAsync(
+            new ReportModel(ReportType.Start, "Download started...", 0, 5));
+    }
     
     protected override async Task<VideoModel> GetVideoInfoAsync(string videoUrl)
     {
