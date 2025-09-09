@@ -6,9 +6,11 @@ import { IProgressMessage, IReport } from '../model/report.model';
   providedIn: 'root',
 })
 export class ReportService {
-  private readonly _stage$: Subject<IReport> = new Subject<IReport>();
-  private readonly _progress$: Subject<Map<number, IProgressMessage>> =
-    new Subject<Map<number, IProgressMessage>>();
+  private readonly _progress$: Subject<IProgressMessage[]> = new Subject<
+    IProgressMessage[]
+  >();
+  private readonly _errorMessage$: Subject<string> = new Subject<string>();
+  private readonly _completedMessage$: Subject<string> = new Subject<string>();
   private _currentStep: number = 0;
 
   private _progressMessage: Map<number, IProgressMessage> = new Map<
@@ -16,22 +18,38 @@ export class ReportService {
     IProgressMessage
   >();
 
-  public stage$ = this._stage$.asObservable();
   public progress$ = this._progress$.asObservable();
+  public errorMessage$ = this._errorMessage$.asObservable();
+  public completedMessage$ = this._completedMessage$.asObservable();
 
   public addReport(report: IReport) {
-    this._stage$.next(report);
-    if (report.type === 'progress') {
-      this.addProgress(report);
-    } else if (report.type === 'start') {
+    if (report.type === 'start') {
       this._currentStep = 0;
       this._progressMessage.clear();
+      this._errorMessage$.next('');
+      this._completedMessage$.next('');
+    } else if (report.type === 'progress') {
+      this.addProgress(report);
+    } else if (report.type === 'completed') {
+      this._completedMessage$.next(report.message);
+    } else if (report.type === 'error') {
+      this._errorMessage$.next(report.message);
     }
   }
 
   private updateProgress(value: { step: number; progress: IProgressMessage }) {
     this._progressMessage.set(value.step, value.progress);
-    this._progress$.next(new Map(this._progressMessage));
+    this._progress$.next(this.mapToArray(this._progressMessage));
+  }
+
+  private mapToArray(progressMessage: Map<number, IProgressMessage>) {
+    let result = [];
+    const sortedKeys = Array.from(progressMessage.keys()).sort();
+    for (let key of sortedKeys) {
+      const value = progressMessage.get(key);
+      if (value) result.push(value);
+    }
+    return result;
   }
 
   private addProgress(report: IReport) {

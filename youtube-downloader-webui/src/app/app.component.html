@@ -21,18 +21,20 @@
 </form>
 
 <div style="margin-top: 12px; height: 240px; overflow: auto">
-  <ng-container *ngFor="let key of progressMessageKeys">
-    <label *ngIf="progressMessage.get(key)"
-      >{{ progressMessage.get(key)?.message }}
-      {{ progressMessage.get(key)?.percentage | percent : "1.2-2" }}</label
+  <ng-container *ngFor="let progress of progressMessage$ | async">
+    <label
+      >{{ progress.message }}
+      {{ progress.percentage | percent : "1.2-2" }}</label
     ><br />
   </ng-container>
-  <ng-container *ngIf="outputAudioLink">
+  <ng-container *ngIf="outputAudioLink$ | async as outputAudioLink">
     <label style="color: green">Download Completed:</label>
     <a [href]="outputAudioLink" target="_blank" download="audio.mp3"
       >Play Audio</a
     >
   </ng-container>
-  <label style="color: red" *ngIf="errorMessage">{{ errorMessage }}</label>
+  <label style="color: red" *ngIf="errorMessage$ | async as errorMessage">{{
+    errorMessage
+  }}</label>
 </div>
 <router-outlet></router-outlet>
