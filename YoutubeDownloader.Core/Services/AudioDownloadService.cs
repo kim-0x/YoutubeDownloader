@@ -23,6 +23,8 @@ public abstract class AudioDownloadService
 
         try
         {
+            OnStart();
+            
             // Get video info
             var videoInfo = await GetVideoInfoAsync(request.VideoUrl);
 
@@ -62,6 +64,11 @@ public abstract class AudioDownloadService
             if (!string.IsNullOrEmpty(coverImagePath))
                 File.Delete(coverImagePath);
         }
+    }
+
+    protected virtual void OnStart()
+    {
+        // Optionally override to handle start event (e.g., notify user)
     }
 
     protected virtual Task<VideoModel> GetVideoInfoAsync(string videoUrl)

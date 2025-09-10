@@ -1,160 +1,96 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import * as signalR from '@microsoft/signalr';
-import { IProgressMessage, IReport } from './model/report.model';
-import { NgFor, NgIf, PercentPipe } from '@angular/common';
-
-const HUB_URL = 'https://localhost:7085/hubs/notification';
-const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
-const VIDEO_API_URL = 'https://localhost:7085/api/video';
+import { AsyncPipe, NgFor, NgIf, PercentPipe } from '@angular/common';
+import { ReportService } from './service/report.service';
+import { debounceTime, firstValueFrom, Subscription } from 'rxjs';
+import { DownloadService } from './service/download.service';
+import { VideoService } from './service/video.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [NgFor, NgIf, PercentPipe, RouterOutlet],
+  imports: [
+    NgFor,
+    NgIf,
+    PercentPipe,
+    AsyncPipe,
+    RouterOutlet,
+    ReactiveFormsModule,
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit {
-  videoUrl = '';
-  videoTitle = '';
-  startAt = '';
-  endAt = '';
-  currentStep: number = 0;
-  progressMessage: Map<number, IProgressMessage> = new Map<
-    number,
-    IProgressMessage
-  >();
-  status: string = '';
-  outputAudioLink?: string;
+export class AppComponent implements OnInit, OnDestroy {
+  private readonly _reportService = inject(ReportService);
+  private readonly _downloadService = inject(DownloadService);
+  private readonly _videoService = inject(VideoService);
+  private readonly _formBuilder = inject(FormBuilder);
+  private readonly _subscription = new Subscription();
 
-  constructor() {
-    let connection = new signalR.HubConnectionBuilder()
-      .withUrl(HUB_URL)
-      .withAutomaticReconnect()
-      .build();
+  readonly downloadForm: FormGroup = this._formBuilder.group({
+    videoUrl: [''],
+    title: [''],
+    startAt: [''],
+    endAt: [''],
+  });
 
-    connection.on('status', (msg) => console.log(msg));
-    connection.on('download', (report: IReport) => this.addResult(report));
-    try {
-      connection.start();
-      console.log('Connected to hub.');
-    } catch (err) {
-      console.log(err);
-    }
+  readonly progressMessage$ = this._reportService.progress$;
+  readonly errorMessage$ = this._reportService.errorMessage$;
+  readonly outputAudioLink$ = this._reportService.completedMessage$;
+
+  ngOnInit(): void {
+    this._subscription.add(
+      this.downloadForm
+        .get('videoUrl')
+        ?.valueChanges.pipe(debounceTime(150))
+        .subscribe((url) => {
+          if (url) this.getInfo(url);
+        })
+    );
   }
 
-  ngOnInit(): void {}
-
-  onUrlChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.videoUrl = input.value;
-    if (this.videoUrl) {
-      this.getTitle();
-    }
-  }
-
-  onTitleChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.videoTitle = input.value;
-  }
-
-  onStartAtChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.startAt = input.value;
-  }
-
-  onEndAtChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.endAt = input.value;
-  }
-
-  getTitle() {
-    if (!this.videoUrl) {
+  async getInfo(url: string) {
+    if (!url) {
       alert('Please enter a valid URL.');
       return;
     }
+
     try {
-      fetch(`${VIDEO_API_URL}?videoUrl=${encodeURIComponent(this.videoUrl)}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then((data) => data.json())
-        .then((data: { videoUrl: string; title: string; duration: string }) => {
-          this.videoTitle = data.title;
-          this.startAt = '00:00:00';
-          this.endAt = data.duration;
-        })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
+      const result = await firstValueFrom(this._videoService.getInfo(url));
+      this.downloadForm.patchValue({
+        title: result.title,
+        startAt: '00:00:00',
+        endAt: result.duration,
+      });
     } catch (err) {
-      console.log('download error: ' + err);
+      console.error('Get video info error: ' + err);
     }
   }
 
-  get progressMessageKeys(): number[] {
-    return Array.from(this.progressMessage.keys()).sort();
-  }
+  async download() {
+    const { videoUrl, title, startAt, endAt } = this.downloadForm.value;
 
-  private clearProgressMessages() {
-    this.currentStep = 0;
-    this.progressMessage.clear();
-    this.status = '';
-    this.outputAudioLink = undefined;
-  }
-
-  download() {
-    if (!this.videoUrl) {
+    if (!videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
+
     try {
-      this.clearProgressMessages();
-      fetch(DOWNLOAD_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          videoUrl: this.videoUrl,
-          title: this.videoTitle,
-          startAt: this.startAt,
-          endAt: this.endAt,
-        }),
-      })
-        .then((data) => {
-          console.log('Success', data);
+      const result = await firstValueFrom(
+        this._downloadService.triggerDownload({
+          videoUrl,
+          title,
+          startAt,
+          endAt,
         })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
+      );
+      console.log('Download initiated, ' + result.message);
     } catch (err) {
-      console.log('download error: ' + err);
+      console.error('Download error: ' + err);
     }
   }
 
-  private addResult(report: IReport) {
-    if (report.type === 'progress') {
-      if (report.step) {
-        this.currentStep = report.step;
-        this.progressMessage.set(report.step, {
-          message: report.message,
-        });
-      } else {
-        var msg = this.progressMessage.get(this.currentStep);
-        if (msg) {
-          msg.percentage = Number(report.message);
-          this.progressMessage.set(this.currentStep, msg);
-        }
-      }
-    } else {
-      if (report.type === 'completed') {
-        this.outputAudioLink = report.message;
-      } else {
-        this.status = report.message;
-      }
-    }
+  ngOnDestroy(): void {
+    this._subscription.unsubscribe();
   }
 }

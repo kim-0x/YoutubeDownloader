@@ -50,6 +50,7 @@ Open [http://localhost:4200](http://localhost:4200) in your browser.
 ## API Endpoints
 
 - `POST /api/download` — Start a new download request.
+- `GET /api/video` — Get video information such as title and duration.
 
 ## Progress Notifications
 
