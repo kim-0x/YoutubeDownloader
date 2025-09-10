@@ -6,6 +6,9 @@ import { debounceTime, firstValueFrom, Subscription } from 'rxjs';
 import { DownloadService } from './service/download.service';
 import { VideoService } from './service/video.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +19,9 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
     AsyncPipe,
     RouterOutlet,
     ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

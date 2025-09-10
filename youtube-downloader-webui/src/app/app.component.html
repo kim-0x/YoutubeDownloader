@@ -1,40 +1,41 @@
-<h1>YouTube Download Client</h1>
-<form [formGroup]="downloadForm">
-  <label
-    >YouTube URL:
-    <input formControlName="videoUrl" size="40" />
-  </label>
-  <button (click)="download()">Download</button> <br />
-  <label
-    >Video Title:
-    <input size="40" formControlName="title" />
-  </label>
-  <br />
-  <label
-    >Start At:
-    <input size="20" formControlName="startAt" />
-  </label>
-  <label
-    >End At:
-    <input size="20" formControlName="endAt" />
-  </label>
-</form>
+<div class="app-container">
+  <h1 class="app-title">YouTube Download Client</h1>
+  <form class="form" [formGroup]="downloadForm">
+    <mat-form-field class="search" appearance="outline">
+      <mat-label>YouTube URL</mat-label>
+      <input matInput formControlName="videoUrl" />
+    </mat-form-field>
+    <mat-form-field class="title" appearance="outline">
+      <mat-label>Video Title</mat-label>
+      <input matInput formControlName="title" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Start At</mat-label>
+      <input matInput formControlName="startAt" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>End At</mat-label>
+      <input matInput formControlName="endAt" />
+    </mat-form-field>
+    <button mat-flat-button (click)="download()">Download</button>
+  </form>
 
-<div style="margin-top: 12px; height: 240px; overflow: auto">
-  <ng-container *ngFor="let progress of progressMessage$ | async">
-    <label
-      >{{ progress.message }}
-      {{ progress.percentage | percent : "1.2-2" }}</label
-    ><br />
-  </ng-container>
-  <ng-container *ngIf="outputAudioLink$ | async as outputAudioLink">
-    <label style="color: green">Download Completed:</label>
-    <a [href]="outputAudioLink" target="_blank" download="audio.mp3"
-      >Play Audio</a
-    >
-  </ng-container>
-  <label style="color: red" *ngIf="errorMessage$ | async as errorMessage">{{
-    errorMessage
-  }}</label>
+  <div style="margin-top: 12px; height: 240px; overflow: auto">
+    <ng-container *ngFor="let progress of progressMessage$ | async">
+      <label
+        >{{ progress.message }}
+        {{ progress.percentage | percent : "1.2-2" }}</label
+      ><br />
+    </ng-container>
+    <ng-container *ngIf="outputAudioLink$ | async as outputAudioLink">
+      <label style="color: green">Download Completed:</label>
+      <a [href]="outputAudioLink" target="_blank" download="audio.mp3"
+        >Play Audio</a
+      >
+    </ng-container>
+    <label style="color: red" *ngIf="errorMessage$ | async as errorMessage">{{
+      errorMessage
+    }}</label>
+  </div>
+  <router-outlet></router-outlet>
 </div>
-<router-outlet></router-outlet>
