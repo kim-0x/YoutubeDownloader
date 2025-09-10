@@ -23,17 +23,19 @@ export class ReportService {
   public completedMessage$ = this._completedMessage$.asObservable();
 
   public addReport(report: IReport) {
-    if (report.type === 'start') {
-      this._currentStep = 0;
-      this._progressMessage.clear();
-      this._errorMessage$.next('');
-      this._completedMessage$.next('');
-    } else if (report.type === 'progress') {
-      this.addProgress(report);
-    } else if (report.type === 'completed') {
-      this._completedMessage$.next(report.message);
-    } else if (report.type === 'error') {
-      this._errorMessage$.next(report.message);
+    switch (report.type) {
+      case 'start':
+        this.init();
+        break;
+      case 'progress':
+        this.addProgress(report);
+        break;
+      case 'completed':
+        this._completedMessage$.next(report.message);
+        break;
+      default:
+        this._errorMessage$.next(report.message);
+        break;
     }
   }
 
@@ -66,5 +68,12 @@ export class ReportService {
         this.updateProgress({ step: this._currentStep, progress: msg });
       }
     }
+  }
+
+  private init() {
+    this._currentStep = 0;
+    this._progressMessage.clear();
+    this._errorMessage$.next('');
+    this._completedMessage$.next('');
   }
 }
