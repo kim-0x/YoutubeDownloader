@@ -9,6 +9,8 @@ export class ReportService {
   private readonly _progress$: Subject<IProgressMessage[]> = new Subject<
     IProgressMessage[]
   >();
+  private readonly _latestProgress$: Subject<IProgressMessage> =
+    new Subject<IProgressMessage>();
   private readonly _errorMessage$: Subject<string> = new Subject<string>();
   private readonly _completedMessage$: Subject<string> = new Subject<string>();
   private _currentStep: number = 0;
@@ -19,6 +21,7 @@ export class ReportService {
   >();
 
   public progress$ = this._progress$.asObservable();
+  public latestProgress$ = this._latestProgress$.asObservable();
   public errorMessage$ = this._errorMessage$.asObservable();
   public completedMessage$ = this._completedMessage$.asObservable();
 
@@ -41,6 +44,7 @@ export class ReportService {
 
   private updateProgress(value: { step: number; progress: IProgressMessage }) {
     this._progressMessage.set(value.step, value.progress);
+    this._latestProgress$.next(value.progress);
     this._progress$.next(this.mapToArray(this._progressMessage));
   }
 

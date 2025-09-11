@@ -17,5 +17,24 @@
       grid-row: 2;
       grid-column: 1 / span 2;
     }
+
+    .download-btn {
+      justify-self: start;
+    }
+  }
+
+  .download-container {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.progress {
+  display: flex;
+  margin-top: 0.5rem;
+  &-number {
+    margin-left: auto;
   }
 }

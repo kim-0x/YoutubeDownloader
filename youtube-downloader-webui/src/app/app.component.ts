@@ -1,6 +1,13 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AsyncPipe, NgFor, NgIf, PercentPipe } from '@angular/common';
+import { AsyncPipe, NgIf, PercentPipe } from '@angular/common';
 import { ReportService } from './service/report.service';
 import { debounceTime, firstValueFrom, Subscription } from 'rxjs';
 import { DownloadService } from './service/download.service';
@@ -9,11 +16,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
   imports: [
-    NgFor,
     NgIf,
     PercentPipe,
     AsyncPipe,
@@ -22,6 +30,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatProgressBarModule,
+    MatDialogModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -31,7 +41,11 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly _downloadService = inject(DownloadService);
   private readonly _videoService = inject(VideoService);
   private readonly _formBuilder = inject(FormBuilder);
+  private readonly _dialog: MatDialog = inject(MatDialog);
   private readonly _subscription = new Subscription();
+
+  @ViewChild('downloadAudioDialogTemplate')
+  _downloadTemplate!: TemplateRef<any>;
 
   readonly downloadForm: FormGroup = this._formBuilder.group({
     videoUrl: [''],
@@ -40,7 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
     endAt: [''],
   });
 
-  readonly progressMessage$ = this._reportService.progress$;
+  readonly progressMessage$ = this._reportService.latestProgress$;
   readonly errorMessage$ = this._reportService.errorMessage$;
   readonly outputAudioLink$ = this._reportService.completedMessage$;
 
@@ -82,7 +96,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const result = await firstValueFrom(
+      await firstValueFrom(
         this._downloadService.triggerDownload({
           videoUrl,
           title,
@@ -90,7 +104,8 @@ export class AppComponent implements OnInit, OnDestroy {
           endAt,
         })
       );
-      console.log('Download initiated, ' + result.message);
+
+      this._dialog.open(this._downloadTemplate);
     } catch (err) {
       console.error('Download error: ' + err);
     }
