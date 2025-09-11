@@ -30,10 +30,16 @@
           [value]="(progress.percentage ?? 0) * 100"
         ></mat-progress-bar>
         <div class="progress">
+          @if(outputAudioLink$ | async; as completedMessage) {
+          <span class="progress-text success">Download Completed</span>
+          } @else { @if (errorMessage$ | async; as errorMessage) {
+          <span class="progress-text error">{{ errorMessage }}</span>
+          } @else {
           <span class="progress-text">{{ progress.message }}</span>
           <span class="progress-number">{{
             progress.percentage | percent : "1.2-2"
           }}</span>
+          }}
         </div>
       </ng-container>
     </mat-dialog-content>
