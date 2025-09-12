@@ -1,51 +1,5 @@
 <div class="app-container">
   <h1 class="app-title">YouTube Download Client</h1>
-  <form class="form" [formGroup]="downloadForm">
-    <mat-form-field class="search" appearance="outline">
-      <mat-label>YouTube URL</mat-label>
-      <input matInput formControlName="videoUrl" />
-    </mat-form-field>
-    <mat-form-field class="title" appearance="outline">
-      <mat-label>Video Title</mat-label>
-      <input matInput formControlName="title" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Start At</mat-label>
-      <input matInput formControlName="startAt" />
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>End At</mat-label>
-      <input matInput formControlName="endAt" />
-    </mat-form-field>
-    <button class="download-btn" mat-flat-button (click)="download()">
-      Download
-    </button>
-  </form>
-  <ng-template #downloadAudioDialogTemplate>
-    <h2 mat-dialog-title>Download Audio</h2>
-    <mat-dialog-content>
-      <ng-container *ngIf="progressMessage$ | async as progress">
-        <mat-progress-bar
-          mode="determinate"
-          [value]="(progress.percentage ?? 0) * 100"
-        ></mat-progress-bar>
-        <div class="progress">
-          @if(outputAudioLink$ | async; as completedMessage) {
-          <span class="progress-text success">Download Completed</span>
-          } @else { @if (errorMessage$ | async; as errorMessage) {
-          <span class="progress-text error">{{ errorMessage }}</span>
-          } @else {
-          <span class="progress-text">{{ progress.message }}</span>
-          <span class="progress-number">{{
-            progress.percentage | percent : "1.2-2"
-          }}</span>
-          }}
-        </div>
-      </ng-container>
-    </mat-dialog-content>
-    <mat-dialog-actions>
-      <button mat-button mat-dialog-close>Close</button>
-    </mat-dialog-actions>
-  </ng-template>
+  <app-video-form></app-video-form>
   <router-outlet></router-outlet>
 </div>

@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Download Audio</h2>
+<mat-dialog-content>
+  <ng-container *ngIf="progressMessage$ | async as progress">
+    <mat-progress-bar
+      mode="determinate"
+      [value]="(progress.percentage ?? 0) * 100"
+    ></mat-progress-bar>
+    <div class="progress">
+      @if(completedMessage$ | async; as completedMessage) {
+      <span class="progress-text success">Download Completed</span>
+      } @else { @if (errorMessage$ | async; as errorMessage) {
+      <span class="progress-text error">{{ errorMessage }}</span>
+      } @else {
+      <span class="progress-text">{{ progress.message }}</span>
+      <span class="progress-number">{{
+        progress.percentage | percent : "1.2-2"
+      }}</span>
+      }}
+    </div>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,21 @@
+<form class="form" [formGroup]="downloadForm">
+  <mat-form-field class="search" appearance="outline">
+    <mat-label>YouTube URL</mat-label>
+    <input matInput formControlName="videoUrl" />
+  </mat-form-field>
+  <mat-form-field class="title" appearance="outline">
+    <mat-label>Video Title</mat-label>
+    <input matInput formControlName="title" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Start At</mat-label>
+    <input matInput formControlName="startAt" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>End At</mat-label>
+    <input matInput formControlName="endAt" />
+  </mat-form-field>
+  <button class="download-btn" mat-flat-button (click)="download()">
+    Download
+  </button>
+</form>
