@@ -2,12 +2,12 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { debounceTime, firstValueFrom, Subscription } from 'rxjs';
-import { DownloadService } from '../../service/download.service';
 import { VideoService } from '../../service/video.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoDialogComponent } from '../dialog/video-dialog.component';
+import { ReportService } from '../../service/report.service';
 
 @Component({
   selector: 'app-video-form',
@@ -21,7 +21,7 @@ import { VideoDialogComponent } from '../dialog/video-dialog.component';
   ],
 })
 export class VideoFormComponent implements OnInit, OnDestroy {
-  private readonly _downloadService = inject(DownloadService);
+  private readonly _reportService = inject(ReportService);
   private readonly _videoService = inject(VideoService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _subscription = new Subscription();
@@ -72,15 +72,12 @@ export class VideoFormComponent implements OnInit, OnDestroy {
     }
 
     try {
-      await firstValueFrom(
-        this._downloadService.triggerDownload({
-          videoUrl,
-          title,
-          startAt,
-          endAt,
-        })
-      );
-
+      await this._reportService.dispatchDownload({
+        videoUrl,
+        title,
+        startAt,
+        endAt,
+      });
       this._dialog.open(VideoDialogComponent);
     } catch (err) {
       console.error('Download error: ' + err);

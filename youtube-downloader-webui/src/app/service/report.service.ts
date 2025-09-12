@@ -1,11 +1,18 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { IProgressMessage, IReport } from '../model/report.model';
+import { inject, Injectable } from '@angular/core';
+import { firstValueFrom, Subject } from 'rxjs';
+import {
+  IDownloadRequest,
+  IProgressMessage,
+  IReport,
+} from '../model/report.model';
+import { DownloadService } from './download.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReportService {
+  private readonly _downloadService = inject(DownloadService);
+
   private readonly _progress$: Subject<IProgressMessage[]> = new Subject<
     IProgressMessage[]
   >();
@@ -19,11 +26,14 @@ export class ReportService {
     number,
     IProgressMessage
   >();
+  private _currentVideo$: Subject<IDownloadRequest> =
+    new Subject<IDownloadRequest>();
 
   public progress$ = this._progress$.asObservable();
   public latestProgress$ = this._latestProgress$.asObservable();
   public errorMessage$ = this._errorMessage$.asObservable();
   public completedMessage$ = this._completedMessage$.asObservable();
+  public currentVideo$ = this._currentVideo$.asObservable();
 
   public addReport(report: IReport) {
     switch (report.type) {
@@ -39,6 +49,17 @@ export class ReportService {
       default:
         this._errorMessage$.next(report.message);
         break;
+    }
+  }
+
+  public async dispatchDownload(downloadRequest: IDownloadRequest) {
+    try {
+      await firstValueFrom(
+        this._downloadService.triggerDownload(downloadRequest)
+      );
+      this._currentVideo$.next(downloadRequest);
+    } catch (error) {
+      console.error('Download error: ' + error);
     }
   }
 
