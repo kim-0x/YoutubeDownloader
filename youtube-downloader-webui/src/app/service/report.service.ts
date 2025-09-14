@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
-import { firstValueFrom, Subject } from 'rxjs';
+import { firstValueFrom, map, Subject, withLatestFrom } from 'rxjs';
 import {
   IDownloadRequest,
   IProgressMessage,
   IReport,
 } from '../model/report.model';
 import { DownloadService } from './download.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +22,7 @@ export class ReportService {
   private readonly _errorMessage$: Subject<string> = new Subject<string>();
   private readonly _completedMessage$: Subject<string> = new Subject<string>();
   private _currentStep: number = 0;
+  private _sanitizer = inject(DomSanitizer);
 
   private _progressMessage: Map<number, IProgressMessage> = new Map<
     number,
@@ -34,6 +36,13 @@ export class ReportService {
   public errorMessage$ = this._errorMessage$.asObservable();
   public completedMessage$ = this._completedMessage$.asObservable();
   public currentVideo$ = this._currentVideo$.asObservable();
+  public currentAudio$ = this._completedMessage$.pipe(
+    withLatestFrom(this._currentVideo$),
+    map(([url, currentVideo]) => ({
+      audioUrl: this._sanitizer.bypassSecurityTrustResourceUrl(url),
+      title: currentVideo.title,
+    }))
+  );
 
   public addReport(report: IReport) {
     switch (report.type) {
@@ -99,6 +108,5 @@ export class ReportService {
     this._currentStep = 0;
     this._progressMessage.clear();
     this._errorMessage$.next('');
-    this._completedMessage$.next('');
   }
 }
