@@ -1,0 +1,19 @@
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: fit-content() repeat(4, 1fr);
+  column-gap: 1rem;
+
+  .search {
+    grid-column: 1 / span 2;
+  }
+
+  .title {
+    grid-row: 2;
+    grid-column: 1 / span 2;
+  }
+
+  .download-btn {
+    justify-self: start;
+  }
+}

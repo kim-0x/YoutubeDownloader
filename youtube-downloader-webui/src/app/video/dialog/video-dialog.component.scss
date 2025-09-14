@@ -1,0 +1,13 @@
+.progress {
+  display: flex;
+  margin-top: 0.5rem;
+  &-number {
+    margin-left: auto;
+  }
+  &-text.success {
+    color: green;
+  }
+  &-text.error {
+    color: red;
+  }
+}
