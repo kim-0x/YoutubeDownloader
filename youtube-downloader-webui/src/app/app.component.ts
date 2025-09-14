@@ -1,9 +1,10 @@
 import {
+  AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
   OnDestroy,
-  OnInit,
   ViewChild,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -20,47 +21,26 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent implements AfterViewInit, OnDestroy {
   @ViewChild('player')
   player?: ElementRef<HTMLAudioElement>;
   private _sanitizer = inject(DomSanitizer);
   private _subscription = new Subscription();
 
   private readonly _reportService = inject(ReportService);
+  private readonly _changeDetection = inject(ChangeDetectorRef);
 
   readonly currentVideo$ = this._reportService.currentVideo$;
   audioUrl?: SafeResourceUrl;
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this._subscription.add(
-      this._reportService.completedMessage$.subscribe(async (url) => {
+      this._reportService.completedMessage$.subscribe((url) => {
         this.audioUrl = this._sanitizer.bypassSecurityTrustResourceUrl(url);
-        if (this.audioUrl) {
-          await this.verifyAudio();
-          this.player?.nativeElement.load();
-        } else {
-          console.warn('audio file not ready yet.');
-        }
+        this.player?.nativeElement.load();
+        this._changeDetection.detectChanges();
       })
     );
-  }
-
-  async verifyAudio() {
-    let retry = 0;
-    while (
-      !(
-        this.player?.nativeElement.readyState ===
-        HTMLMediaElement.HAVE_ENOUGH_DATA
-      ) &&
-      retry < 3
-    ) {
-      await this.sleep(1000);
-      retry++;
-    }
-  }
-
-  sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   ngOnDestroy(): void {
