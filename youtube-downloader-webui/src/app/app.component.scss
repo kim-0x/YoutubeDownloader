@@ -1,6 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+}
+
 .app-container {
   padding: 1rem;
   display: flex;
   flex-direction: column;
   row-gap: 1rem;
+  max-width: 31.25rem;
+  min-width: 16.25rem;
+  align-self: center;
 }
