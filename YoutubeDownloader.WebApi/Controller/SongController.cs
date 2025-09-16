@@ -15,7 +15,29 @@ public class SongController : ControllerBase
     {
         var list = await this._songService.GetSong();
 
-        return Ok(list);
+        Func<string, string> DateLabel = (input) =>
+        {
+            var today = DateTime.Today;
+            if (input == today.ToString("d"))
+            {
+                return "Today";
+            }
+            else if (input == today.AddDays(-1).ToString("d"))
+            {
+                return "Yesterday";
+            }
+            else
+            {
+                return "Previous";
+            }
+        };
+
+        var result = list
+            .OrderByDescending(x => DateTime.Parse(x.DateCreated))
+            .GroupBy(x => DateLabel(x.DateCreated))
+            .ToDictionary(group => group.Key,
+            group => group.Select(x => new {x.Title, x.AudioUrl}));
+        return Ok(result);
     }
     
     [HttpPost]
