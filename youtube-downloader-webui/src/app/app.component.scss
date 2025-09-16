@@ -11,4 +11,43 @@
   max-width: 31.25rem;
   min-width: 16.25rem;
   align-self: center;
+
+  .song-container {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .scroll-viewport {
+    height: 240px;
+    width: 300px;
+
+    .song-list {
+      display: flex;
+      flex-direction: column;
+
+      .song-header,
+      .song-item {
+        height: 24px;
+        padding: 0.5rem;
+      }
+
+      .song-item {
+        display: flex;
+        align-items: center;
+        font-weight: 300;
+        &:hover {
+          cursor: pointer;
+          background-color: rgb(237, 237, 237);
+        }
+
+        mat-icon {
+          margin-left: auto;
+        }
+      }
+
+      .song-item.selected {
+        background-color: rgb(237, 237, 237);
+      }
+    }
+  }
 }
