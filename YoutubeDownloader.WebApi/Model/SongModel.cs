@@ -4,6 +4,11 @@ public record SongModel(
     string AudioUrl
 );
 
+public record SongDto (
+    string Title,
+    string AudioUrl
+);
+
 public sealed class DataStoreSettings
 {
     public string PublicBaseUrl { get; set; } = "https://localhost:7085";

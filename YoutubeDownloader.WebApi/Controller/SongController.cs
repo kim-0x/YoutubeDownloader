@@ -19,9 +19,15 @@ public class SongController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddSong([FromBody] SongModel newSong)
+    public async Task<IActionResult> AddSong([FromBody] SongDto newSong)
     {
-        await _songService.AddSong(newSong);
+        var song = new SongModel(
+            DateTime.Today.ToString("d"),
+            newSong.Title,
+            newSong.AudioUrl
+        );
+
+        await _songService.AddSong(song);
         return Ok(await this._songService.GetSong());
     }
 }
