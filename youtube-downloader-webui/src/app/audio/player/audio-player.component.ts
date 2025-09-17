@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
@@ -7,7 +8,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { Subscription, tap } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { ReportService } from '../../service/report.service';
 import { SongService } from '../../service/song.service';
 import { SafeResourceUrl } from '@angular/platform-browser';
@@ -26,26 +27,18 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
 
   private readonly _reportService = inject(ReportService);
   private readonly _songService = inject(SongService);
-
-  readonly currentAudio$ = this._reportService.currentAudio$.pipe(
-    tap(() => this.player?.nativeElement.load())
-  );
+  private readonly _cd: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   currentAudio: { audioUrl: SafeResourceUrl; title: string } | undefined;
 
-  readonly userSelectAudio$ = this._songService.currentSong$.subscribe();
-
   ngOnInit(): void {
     this._subscription.add(
-      this._reportService.currentAudio$.subscribe((result) => {
+      merge(
+        this._reportService.currentAudio$,
+        this._songService.currentSong$
+      ).subscribe((result) => {
         this.currentAudio = result;
-        this.player?.nativeElement.load();
-      })
-    );
-
-    this._subscription.add(
-      this._songService.currentSong$.subscribe((result) => {
-        this.currentAudio = result;
+        this._cd.detectChanges();
         this.player?.nativeElement.load();
       })
     );

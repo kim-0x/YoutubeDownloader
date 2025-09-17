@@ -7,6 +7,7 @@ import {
 } from '../model/report.model';
 import { DownloadService } from './download.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { EventingService } from './eventing.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,7 @@ export class ReportService {
   private readonly _completedMessage$: Subject<string> = new Subject<string>();
   private _currentStep: number = 0;
   private _sanitizer = inject(DomSanitizer);
+  private _eventingService = inject(EventingService);
 
   private _progressMessage: Map<number, IProgressMessage> = new Map<
     number,
@@ -54,9 +56,11 @@ export class ReportService {
         break;
       case 'completed':
         this._completedMessage$.next(report.message);
+        this._eventingService.updateCompletedMessage(report.message);
         break;
       default:
         this._errorMessage$.next(report.message);
+        this._eventingService.updateErrorMessage(report.message);
         break;
     }
   }

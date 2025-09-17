@@ -5,7 +5,7 @@
     <app-audio-player></app-audio-player>
     <cdk-virtual-scroll-viewport itemSize="24" class="scroll-viewport">
       <div class="song-list">
-        <ng-container *cdkVirtualFor="let item of ds">
+        <ng-container *cdkVirtualFor="let item of songs$ | async">
           <div
             class="song-header"
             *ngIf="item?.type === 'header'"

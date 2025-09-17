@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, firstValueFrom, Subject } from 'rxjs';
 
 const SONG_API_URL = 'https://localhost:7085/api/song';
 
@@ -16,6 +17,8 @@ export class SongService {
   readonly songs$ = this._songs$.asObservable();
   private _current$ = new Subject<{ title: string; audioUrl: string }>();
   readonly currentSong$ = this._current$.asObservable();
+
+  private readonly _httpClient = inject(HttpClient);
 
   constructor() {
     this.fetchItems();
@@ -35,27 +38,26 @@ export class SongService {
   }
 
   private fetchItems() {
-    try {
-      fetch(`${SONG_API_URL}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    firstValueFrom(this._httpClient.get(SONG_API_URL))
+      .then((data) => {
+        const result: Map<
+          string,
+          Array<{ title: string; audioUrl: string }>
+        > = new Map(Object.entries(data));
+        const nextStream = this.flatSongList(result);
+        this._songs$.next(nextStream);
       })
-        .then((data) => data.json())
-        .then((data) => {
-          const result: Map<
-            string,
-            Array<{ title: string; audioUrl: string }>
-          > = new Map(Object.entries(data));
-          const nextStream = this.flatSongList(result);
-          this._songs$.next(nextStream);
-        })
-        .catch((error) => {
-          console.error('Error: ', error);
-        });
-    } catch (err) {
-      console.log('download error: ' + err);
+      .catch((error) => {
+        console.error('Fetch Error: ', error);
+      });
+  }
+
+  async dispatchSongUpdate(song: { title: string; audioUrl: string }) {
+    try {
+      const _ = await firstValueFrom(this._httpClient.post(SONG_API_URL, song));
+      this.fetchItems();
+    } catch (error) {
+      console.error('Post Error: ', error);
     }
   }
 
