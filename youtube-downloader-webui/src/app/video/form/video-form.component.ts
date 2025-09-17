@@ -8,8 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoDialogComponent } from '../dialog/video-dialog.component';
 import { ReportService } from '../../service/report.service';
-import { SongService } from '../../service/song.service';
-import { EventingService } from '../../service/eventing.service';
 
 @Component({
   selector: 'app-video-form',
@@ -28,9 +26,6 @@ export class VideoFormComponent implements OnInit, OnDestroy {
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _subscription = new Subscription();
   private readonly _dialog: MatDialog = inject(MatDialog);
-  private readonly _songService = inject(SongService);
-  private readonly _eventingService = inject(EventingService);
-  private _audioUrl?: string = undefined;
 
   readonly downloadForm: FormGroup = this._formBuilder.group({
     videoUrl: [''],
@@ -47,12 +42,6 @@ export class VideoFormComponent implements OnInit, OnDestroy {
         .subscribe((url) => {
           if (url) this.getInfo(url);
         })
-    );
-
-    this._subscription.add(
-      this._eventingService.completedMessage$.subscribe((message) => {
-        this._audioUrl = message;
-      })
     );
   }
 
@@ -89,16 +78,7 @@ export class VideoFormComponent implements OnInit, OnDestroy {
         startAt,
         endAt,
       });
-      const dialogRef = this._dialog.open(VideoDialogComponent);
-      this._subscription.add(
-        dialogRef.afterClosed().subscribe(() => {
-          if (this._audioUrl)
-            this._songService.dispatchSongUpdate({
-              title,
-              audioUrl: this._audioUrl,
-            });
-        })
-      );
+      this._dialog.open(VideoDialogComponent);
     } catch (err) {
       console.error('Download error: ' + err);
     }

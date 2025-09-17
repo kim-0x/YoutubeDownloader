@@ -8,10 +8,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
-import { merge, Subscription } from 'rxjs';
+import { map, merge, Subscription, withLatestFrom } from 'rxjs';
 import { ReportService } from '../../service/report.service';
 import { SongService } from '../../service/song.service';
-import { SafeResourceUrl } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DownloadEventsService } from '../../service/download-events.service';
 
 @Component({
   selector: 'app-audio-player',
@@ -24,23 +25,31 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
   player?: ElementRef<HTMLAudioElement>;
 
   private readonly _subscription = new Subscription();
+  private _sanitizer = inject(DomSanitizer);
 
   private readonly _reportService = inject(ReportService);
+  private readonly _downloadEventsService = inject(DownloadEventsService);
   private readonly _songService = inject(SongService);
   private readonly _cd: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private readonly _currentAudio$ = this._downloadEventsService.completed$.pipe(
+    withLatestFrom(this._reportService.currentVideo$),
+    map(([url, currentVideo]) => ({
+      audioUrl: this._sanitizer.bypassSecurityTrustResourceUrl(url),
+      title: currentVideo.title,
+    }))
+  );
 
   currentAudio: { audioUrl: SafeResourceUrl; title: string } | undefined;
 
   ngOnInit(): void {
     this._subscription.add(
-      merge(
-        this._reportService.currentAudio$,
-        this._songService.currentSong$
-      ).subscribe((result) => {
-        this.currentAudio = result;
-        this._cd.detectChanges();
-        this.player?.nativeElement.load();
-      })
+      merge(this._currentAudio$, this._songService.currentSong$).subscribe(
+        (result) => {
+          this.currentAudio = result;
+          this._cd.detectChanges();
+          this.player?.nativeElement.load();
+        }
+      )
     );
   }
 

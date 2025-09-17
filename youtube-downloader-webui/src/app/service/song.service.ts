@@ -37,25 +37,24 @@ export class SongService {
     this._songs$.next(source);
   }
 
-  private fetchItems() {
-    firstValueFrom(this._httpClient.get(SONG_API_URL))
-      .then((data) => {
-        const result: Map<
-          string,
-          Array<{ title: string; audioUrl: string }>
-        > = new Map(Object.entries(data));
-        const nextStream = this.flatSongList(result);
-        this._songs$.next(nextStream);
-      })
-      .catch((error) => {
-        console.error('Fetch Error: ', error);
-      });
+  private async fetchItems() {
+    try {
+      const data = await firstValueFrom(this._httpClient.get(SONG_API_URL));
+      const result: Map<
+        string,
+        Array<{ title: string; audioUrl: string }>
+      > = new Map(Object.entries(data));
+      const nextStream = this.flatSongList(result);
+      this._songs$.next(nextStream);
+    } catch (error) {
+      console.error('Fetch error', error);
+    }
   }
 
   async dispatchSongUpdate(song: { title: string; audioUrl: string }) {
     try {
       const _ = await firstValueFrom(this._httpClient.post(SONG_API_URL, song));
-      this.fetchItems();
+      await this.fetchItems();
     } catch (error) {
       console.error('Post Error: ', error);
     }
