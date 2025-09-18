@@ -1,5 +1,4 @@
 import {
-  ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
@@ -30,7 +29,6 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
   private readonly _reportService = inject(ReportService);
   private readonly _downloadEventsService = inject(DownloadEventsService);
   private readonly _songService = inject(SongService);
-  private readonly _cd: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly _currentAudio$ = this._downloadEventsService.completed$.pipe(
     withLatestFrom(this._reportService.currentVideo$),
     map(([url, currentVideo]) => ({
@@ -46,7 +44,6 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
       merge(this._currentAudio$, this._songService.currentSong$).subscribe(
         (result) => {
           this.currentAudio = result;
-          this._cd.detectChanges();
           this.player?.nativeElement.load();
         }
       )
