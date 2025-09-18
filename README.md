@@ -55,6 +55,8 @@ Open [http://localhost:4200](http://localhost:4200) in your browser.
 
 - `POST /api/download` — Start a new download request.
 - `GET /api/video` — Get video information such as title and duration.
+- `GET /api/song` — Get list of song has been download.
+- `POST /api/song` — Add a new song to the list.
 
 ## Progress Notifications
 

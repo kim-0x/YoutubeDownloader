@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
@@ -24,7 +25,8 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
   player?: ElementRef<HTMLAudioElement>;
 
   private readonly _subscription = new Subscription();
-  private _sanitizer = inject(DomSanitizer);
+  private readonly _sanitizer = inject(DomSanitizer);
+  private readonly _cd: ChangeDetectorRef = inject(ChangeDetectorRef);
 
   private readonly _downloadService = inject(DownloadService);
   private readonly _downloadEventsService = inject(DownloadEventsService);
@@ -44,6 +46,7 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
       merge(this._currentAudio$, this._songService.currentSong$).subscribe(
         (result) => {
           this.currentAudio = result;
+          this._cd.detectChanges();
           this.player?.nativeElement.load();
         }
       )
