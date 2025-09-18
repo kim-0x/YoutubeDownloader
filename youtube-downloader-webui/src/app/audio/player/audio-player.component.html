@@ -1,6 +1,6 @@
 <mat-card class="player-card">
   <mat-card-header class="card-header">
-    @if(currentAudio$ | async; as currentAudio) {
+    @if(currentAudio) {
     <mat-card-title>{{ currentAudio.title }}</mat-card-title>
     } @else {
     <mat-card-title>Audio Player</mat-card-title>
@@ -13,7 +13,7 @@
   </mat-card-content>
   <mat-card-footer class="card-footer">
     <audio #player controls>
-      @if(currentAudio$ | async; as currentAudio) {
+      @if(currentAudio) {
       <source [src]="currentAudio.audioUrl" type="audio/mpeg" />
       } Your browser does not support the audio element.
     </audio>

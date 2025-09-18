@@ -8,6 +8,9 @@ builder.Services.AddMemoryCache();
 
 builder.Services.Configure<DownloadSetting>(
     builder.Configuration.GetSection("DownloadSettings"));
+builder.Services.Configure<DataStoreSettings>(
+    builder.Configuration.GetSection("DataStoreSettings"));
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -19,6 +22,7 @@ builder.Services.AddSingleton<IAudioCoverEmbedder, AudioCoverEmbedder>()
 builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
 builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
 builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
+builder.Services.AddSingleton<ISongService, JsonSongService>();
 
 builder.Services.AddSignalR().AddJsonProtocol(option =>
 {

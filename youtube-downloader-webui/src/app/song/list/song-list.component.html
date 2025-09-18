@@ -1,0 +1,19 @@
+<cdk-virtual-scroll-viewport itemSize="24" class="scroll-viewport">
+  <div class="song-list">
+    <ng-container *cdkVirtualFor="let item of songs$ | async">
+      <div class="song-header" *ngIf="item.type === 'header'" mat-subheader>
+        {{ item.text }}
+      </div>
+      <div
+        class="song-item"
+        [class.selected]="item.selected"
+        *ngIf="item.type === 'song'"
+        (click)="onClick(item.text)"
+      >
+        <div class="song-item-text">{{ item.text }}</div>
+        <mat-icon *ngIf="item.selected">check_small</mat-icon>
+      </div>
+      <mat-divider *ngIf="item.type === 'line'"></mat-divider>
+    </ng-container>
+  </div>
+</cdk-virtual-scroll-viewport>
