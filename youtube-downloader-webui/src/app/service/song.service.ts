@@ -69,16 +69,17 @@ export class SongService {
     mapResult: Map<string, Array<{ title: string; audioUrl: string }>>
   ): Array<SongItem> {
     const flatResult: Array<SongItem> = [];
-    for (const [key, value] of mapResult.entries()) {
+    for (const [key, value] of mapResult) {
       flatResult.push({ type: 'header', text: key, link: '', selected: false });
-      for (const song of value) {
-        flatResult.push({
-          type: 'song',
-          text: song.title,
-          link: song.audioUrl,
-          selected: false,
-        });
-      }
+
+      const list: SongItem[] = value.map((v) => ({
+        type: 'song',
+        text: v.title,
+        link: v.audioUrl,
+        selected: false,
+      }));
+      flatResult.push(...list);
+
       flatResult.push({ type: 'line', text: '', link: '', selected: false });
     }
 
