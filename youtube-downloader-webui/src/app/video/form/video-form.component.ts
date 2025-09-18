@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoDialogComponent } from '../dialog/video-dialog.component';
-import { ReportService } from '../../service/report.service';
+import { DownloadService } from '../../service/download.service';
 
 @Component({
   selector: 'app-video-form',
@@ -21,7 +21,7 @@ import { ReportService } from '../../service/report.service';
   ],
 })
 export class VideoFormComponent implements OnInit, OnDestroy {
-  private readonly _reportService = inject(ReportService);
+  private readonly _downloadService = inject(DownloadService);
   private readonly _videoService = inject(VideoService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _subscription = new Subscription();
@@ -72,7 +72,7 @@ export class VideoFormComponent implements OnInit, OnDestroy {
     }
 
     try {
-      await this._reportService.dispatchDownload({
+      await this._downloadService.triggerDownload({
         videoUrl,
         title,
         startAt,

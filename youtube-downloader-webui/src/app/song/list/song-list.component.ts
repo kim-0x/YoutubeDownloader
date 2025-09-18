@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { map, Subscription, withLatestFrom } from 'rxjs';
 import { DownloadEventsService } from '../../service/download-events.service';
 import { SongService } from '../../service/song.service';
-import { ReportService } from '../../service/report.service';
+import { DownloadService } from '../../service/download.service';
 
 @Component({
   selector: 'app-song-list',
@@ -20,9 +20,9 @@ export class SongListComponent {
 
   private readonly _songService = inject(SongService);
   private readonly _downloadEventsService = inject(DownloadEventsService);
-  private readonly _reportService = inject(ReportService);
+  private readonly _downloadService = inject(DownloadService);
   private readonly _newSong$ = this._downloadEventsService.completed$.pipe(
-    withLatestFrom(this._reportService.currentVideo$),
+    withLatestFrom(this._downloadService.currentVideo$),
     map(([url, currentVideo]) => ({
       audioUrl: url,
       title: currentVideo.title,

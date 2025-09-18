@@ -8,10 +8,10 @@ import {
 } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { map, merge, Subscription, withLatestFrom } from 'rxjs';
-import { ReportService } from '../../service/report.service';
 import { SongService } from '../../service/song.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DownloadEventsService } from '../../service/download-events.service';
+import { DownloadService } from '../../service/download.service';
 
 @Component({
   selector: 'app-audio-player',
@@ -26,11 +26,11 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
   private readonly _subscription = new Subscription();
   private _sanitizer = inject(DomSanitizer);
 
-  private readonly _reportService = inject(ReportService);
+  private readonly _downloadService = inject(DownloadService);
   private readonly _downloadEventsService = inject(DownloadEventsService);
   private readonly _songService = inject(SongService);
   private readonly _currentAudio$ = this._downloadEventsService.completed$.pipe(
-    withLatestFrom(this._reportService.currentVideo$),
+    withLatestFrom(this._downloadService.currentVideo$),
     map(([url, currentVideo]) => ({
       audioUrl: this._sanitizer.bypassSecurityTrustResourceUrl(url),
       title: currentVideo.title,
