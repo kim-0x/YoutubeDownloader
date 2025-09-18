@@ -28,7 +28,11 @@ public class SongController : ControllerBase
             }
             else
             {
-                return "Previous";
+                var isThisWeek = Enumerable.Range(2, 5)
+                    .Any(s => input == today.AddDays(Math.Sign(-1) * s)
+                    .ToString("d"));
+
+                return isThisWeek ? "This Week" : "Old";
             }
         };
 
