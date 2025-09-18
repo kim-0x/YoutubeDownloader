@@ -1,11 +1,18 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { AsyncPipe, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { map, Subscription, withLatestFrom } from 'rxjs';
+import { filter, map, Subscription, take, withLatestFrom } from 'rxjs';
 import { DownloadEventsService } from '../../service/download-events.service';
-import { SongService } from '../../service/song.service';
+import { SongItem, SongService } from '../../service/song.service';
 import { DownloadService } from '../../service/download.service';
 
 @Component({
@@ -15,7 +22,7 @@ import { DownloadService } from '../../service/download.service';
   imports: [NgIf, AsyncPipe, ScrollingModule, MatIconModule, MatDivider],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongListComponent {
+export class SongListComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly _subscription = new Subscription();
 
   private readonly _songService = inject(SongService);
@@ -37,6 +44,22 @@ export class SongListComponent {
         await this._songService.dispatchSongUpdate(newSong);
         this._songService.updateTitleSelection(newSong.title);
       })
+    );
+  }
+
+  ngAfterViewInit(): void {
+    this._subscription.add(
+      this._songService.songs$
+        .pipe(
+          filter((s) => s.length > 0),
+          take(1)
+        )
+        .subscribe((songs: SongItem[]) => {
+          const song = songs.find((s) => s.type === 'song');
+          if (song) {
+            this._songService.updateTitleSelection(song.text);
+          }
+        })
     );
   }
 
