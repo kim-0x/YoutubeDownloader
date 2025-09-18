@@ -13,7 +13,7 @@ export type SongItem = {
 
 @Injectable({ providedIn: 'root' })
 export class SongService {
-  private _songs$ = new BehaviorSubject<Array<SongItem | undefined>>([]);
+  private _songs$ = new BehaviorSubject<Array<SongItem>>([]);
   readonly songs$ = this._songs$.asObservable();
   private _current$ = new Subject<{ title: string; audioUrl: string }>();
   readonly currentSong$ = this._current$.asObservable();
@@ -24,17 +24,22 @@ export class SongService {
     this.fetchItems();
   }
 
-  updateTitleSelection(selectedItemChanges: string | undefined) {
-    const source = this._songs$.value;
-    for (let s of source) {
-      if (s?.type === 'song') {
-        s.selected = s.text === selectedItemChanges;
-        if (s.text === selectedItemChanges) {
-          this._current$.next({ title: s.text, audioUrl: s.link });
-        }
-      }
+  updateTitleSelection(selectedItemChanges: string) {
+    const snapshotSongs = this._songs$.value;
+    const updatedList = snapshotSongs.map((s) =>
+      s.type === 'song' ? { ...s, selected: s.text === selectedItemChanges } : s
+    );
+    this._songs$.next(updatedList);
+
+    const selectedSong = updatedList.find(
+      (s) => s.type === 'song' && s.selected
+    );
+    if (selectedSong) {
+      this._current$.next({
+        title: selectedSong.text,
+        audioUrl: selectedSong.link,
+      });
     }
-    this._songs$.next(source);
   }
 
   private async fetchItems() {

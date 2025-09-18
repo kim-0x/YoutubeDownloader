@@ -40,7 +40,7 @@ export class SongListComponent {
     );
   }
 
-  onClick(title: string | undefined) {
+  onClick(title: string) {
     this._songService.updateTitleSelection(title);
   }
 
