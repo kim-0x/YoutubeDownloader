@@ -5,5 +5,6 @@
     <app-audio-player></app-audio-player>
     <app-song-list></app-song-list>
   </div>
+  <div>{{ songs$ | async | json }}</div>
   <router-outlet></router-outlet>
 </div>
