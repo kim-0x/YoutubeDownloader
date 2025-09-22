@@ -7,6 +7,7 @@ import {
   inject,
   OnDestroy,
   OnInit,
+  output,
 } from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,15 +15,24 @@ import { filter, map, Subscription, take, withLatestFrom } from 'rxjs';
 import { DownloadEventsService } from '../../service/download-events.service';
 import { SongItem, SongService } from '../../service/song.service';
 import { DownloadService } from '../../service/download.service';
+import { MatRippleModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-song-list',
   templateUrl: './song-list.component.html',
   styleUrl: './song-list.component.scss',
-  imports: [NgIf, AsyncPipe, ScrollingModule, MatIconModule, MatDivider],
+  imports: [
+    NgIf,
+    AsyncPipe,
+    ScrollingModule,
+    MatIconModule,
+    MatDivider,
+    MatRippleModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SongListComponent implements OnInit, AfterViewInit, OnDestroy {
+  selectedSong = output<string>();
   private readonly _subscription = new Subscription();
 
   private readonly _songService = inject(SongService);
@@ -65,6 +75,7 @@ export class SongListComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onClick(title: string) {
     this._songService.updateTitleSelection(title);
+    this.selectedSong.emit(title);
   }
 
   ngOnDestroy(): void {

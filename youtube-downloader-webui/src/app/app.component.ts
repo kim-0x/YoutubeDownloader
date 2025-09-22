@@ -35,4 +35,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this._store.dispatch({ type: SongActionTypes.LoadSongs });
   }
+
+  handleSelectionChange(title: string) {
+    this._store.dispatch({ type: SongActionTypes.SelectSong, title });
+  }
 }

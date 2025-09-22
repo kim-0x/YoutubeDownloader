@@ -1,6 +1,8 @@
+import { SongDetail, SongItem } from './song.model';
+
 export interface SongState {
-  items: Array<SongItemState>;
-  selected: SongDetailState;
+  items: Array<SongItem>;
+  selected: SongDetail;
   error: any;
 }
 
@@ -9,13 +11,3 @@ export const initialSongState: SongState = {
   error: '',
   selected: { title: '', audioUrl: '' },
 };
-
-export interface SongItemState {
-  dateLabel: string;
-  songDetails: Array<SongDetailState>;
-}
-
-export interface SongDetailState {
-  title: string;
-  audioUrl: string;
-}

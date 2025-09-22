@@ -6,6 +6,7 @@
       </div>
       <div
         class="song-item"
+        matRipple
         [class.selected]="item.selected"
         *ngIf="item.type === 'song'"
         (click)="onClick(item.text)"

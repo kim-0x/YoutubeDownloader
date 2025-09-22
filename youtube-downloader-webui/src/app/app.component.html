@@ -3,7 +3,9 @@
   <app-video-form></app-video-form>
   <div class="song-container">
     <app-audio-player></app-audio-player>
-    <app-song-list></app-song-list>
+    <app-song-list
+      (selectedSong)="handleSelectionChange($event)"
+    ></app-song-list>
   </div>
   <div>{{ songs$ | async | json }}</div>
   <router-outlet></router-outlet>
