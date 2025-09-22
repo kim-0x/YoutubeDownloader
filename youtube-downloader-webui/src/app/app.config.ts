@@ -14,7 +14,9 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideEffects } from '@ngrx/effects';
 import { SongsEffects } from './store/song/songs.effects';
 import { songReducer } from './store/song/song.reducer';
-import { songFeatureKey } from './store/state';
+import { songFeatureKey, videoFeatureKey } from './store/state';
+import { VideoEffects } from './store/video/video.effects';
+import { videoReducer } from './store/video/video.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,6 +34,7 @@ export const appConfig: ApplicationConfig = {
       connectInZone: true, // If set to true, the connection is established within the Angular zone,
     }),
     provideState({ name: songFeatureKey, reducer: songReducer }),
-    provideEffects(SongsEffects),
+    provideState({ name: videoFeatureKey, reducer: videoReducer }),
+    provideEffects([SongsEffects, VideoEffects]),
   ],
 };

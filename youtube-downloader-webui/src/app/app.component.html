@@ -7,6 +7,7 @@
       (selectedSong)="handleSelectionChange($event)"
     ></app-song-list>
   </div>
-  <div>{{ songs$ | async | json }}</div>
+  <button mat-button (click)="handleVideoInfo()">Get Video Info</button>
+  <div>{{ video$ | async | json }}</div>
   <router-outlet></router-outlet>
 </div>
