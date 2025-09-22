@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+import { SongItemState } from '../state/song.state';
 
 export enum SongActionTypes {
   LoadSongs = '[Song API] Load Songs',
@@ -10,7 +11,7 @@ export const loadSongs = createAction(SongActionTypes.LoadSongs);
 
 export const loadSongsSuccess = createAction(
   SongActionTypes.LoadSongsSuccess,
-  props<{ payload: Map<string, any[]> }>()
+  props<{ payload: Array<SongItemState> }>()
 );
 
 export const loadSongsFail = createAction(

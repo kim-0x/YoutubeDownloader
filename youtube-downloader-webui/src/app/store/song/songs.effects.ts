@@ -18,7 +18,7 @@ export class SongsEffects {
         this._httpClient.get(SONG_API_URL).pipe(
           map((songs) => ({
             type: SongActionTypes.LoadSongsSuccess,
-            payload: new Map(Object.entries(songs)),
+            payload: this.flatResult(new Map(Object.entries(songs))),
           })),
           catchError((error) =>
             of({
@@ -30,4 +30,15 @@ export class SongsEffects {
       )
     );
   });
+
+  private flatResult(
+    payload: Map<string, Array<{ title: string; audioUrl: string }>>
+  ) {
+    return Array.from(payload).map(([key, value]) => {
+      return {
+        dateLabel: key,
+        songDetails: value,
+      };
+    });
+  }
 }
