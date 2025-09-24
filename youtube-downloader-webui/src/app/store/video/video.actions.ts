@@ -2,9 +2,9 @@ import { createAction, props } from '@ngrx/store';
 import { Video } from '../state/video.model';
 
 export enum VideoActionTypes {
-  getVideoInfo = '[Video Component] Download Youtube Video by URL',
-  getVideoInfoSuccess = '[Video API] Download Video Success',
-  getVideoInfoFail = '[Video API] Download Video Fail',
+  getVideoInfo = '[Video Component] Get Youtube Video by URL',
+  getVideoInfoSuccess = '[Video API] Get Video Success',
+  getVideoInfoFail = '[Video API] Get Video Fail',
 }
 
 export const getVideoInfo = createAction(

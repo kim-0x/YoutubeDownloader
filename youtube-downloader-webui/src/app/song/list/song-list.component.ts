@@ -1,21 +1,21 @@
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   inject,
-  OnDestroy,
   OnInit,
-  output,
 } from '@angular/core';
 import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { filter, map, Subscription, take, withLatestFrom } from 'rxjs';
-import { DownloadEventsService } from '../../service/download-events.service';
-import { SongItem, SongService } from '../../service/song.service';
-import { DownloadService } from '../../service/download.service';
 import { MatRippleModule } from '@angular/material/core';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/state';
+import {
+  selectedSongTitleSelector,
+  songItemsSelector,
+} from '../../store/song/song.selector';
+import { SongActionTypes } from '../../store/song/song.actions';
 
 @Component({
   selector: 'app-song-list',
@@ -28,57 +28,21 @@ import { MatRippleModule } from '@angular/material/core';
     MatIconModule,
     MatDivider,
     MatRippleModule,
+    NgForOf,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongListComponent implements OnInit, AfterViewInit, OnDestroy {
-  selectedSong = output<string>();
-  private readonly _subscription = new Subscription();
+export class SongListComponent implements OnInit {
+  private readonly _store = inject(Store<AppState>);
+  readonly songs$ = this._store.select(songItemsSelector);
 
-  private readonly _songService = inject(SongService);
-  private readonly _downloadEventsService = inject(DownloadEventsService);
-  private readonly _downloadService = inject(DownloadService);
-  private readonly _newSong$ = this._downloadEventsService.completed$.pipe(
-    withLatestFrom(this._downloadService.currentVideo$),
-    map(([url, currentVideo]) => ({
-      audioUrl: url,
-      title: currentVideo.title,
-    }))
-  );
-
-  readonly songs$ = this._songService.songs$;
+  readonly selectedSongTitle$ = this._store.select(selectedSongTitleSelector);
 
   ngOnInit(): void {
-    this._subscription.add(
-      this._newSong$.subscribe(async (newSong) => {
-        await this._songService.dispatchSongUpdate(newSong);
-        this._songService.updateTitleSelection(newSong.title);
-      })
-    );
-  }
-
-  ngAfterViewInit(): void {
-    this._subscription.add(
-      this._songService.songs$
-        .pipe(
-          filter((s) => s.length > 0),
-          take(1)
-        )
-        .subscribe((songs: SongItem[]) => {
-          const song = songs.find((s) => s.type === 'song');
-          if (song) {
-            this._songService.updateTitleSelection(song.text);
-          }
-        })
-    );
+    this._store.dispatch({ type: SongActionTypes.LoadSongs });
   }
 
   onClick(title: string) {
-    this._songService.updateTitleSelection(title);
-    this.selectedSong.emit(title);
-  }
-
-  ngOnDestroy(): void {
-    this._subscription.unsubscribe();
+    this._store.dispatch({ type: SongActionTypes.SelectSong, title });
   }
 }

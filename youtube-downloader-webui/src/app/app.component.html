@@ -3,11 +3,7 @@
   <app-video-form></app-video-form>
   <div class="song-container">
     <app-audio-player></app-audio-player>
-    <app-song-list
-      (selectedSong)="handleSelectionChange($event)"
-    ></app-song-list>
+    <app-song-list></app-song-list>
   </div>
-  <button mat-button (click)="handleVideoInfo()">Get Video Info</button>
-  <div>{{ video$ | async | json }}</div>
   <router-outlet></router-outlet>
 </div>

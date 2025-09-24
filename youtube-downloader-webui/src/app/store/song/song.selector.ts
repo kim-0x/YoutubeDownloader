@@ -8,3 +8,13 @@ export const songItemsSelector = createSelector(
   songSelector,
   (song: SongState) => song.items
 );
+
+export const selectedSongSelector = createSelector(
+  songSelector,
+  (song: SongState) => song.selected
+);
+
+export const selectedSongTitleSelector = createSelector(
+  songSelector,
+  (song: SongState) => song.selected.title
+);
