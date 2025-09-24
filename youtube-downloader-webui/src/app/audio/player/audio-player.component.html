@@ -1,21 +1,15 @@
-<mat-card class="player-card">
-  <mat-card-header class="card-header">
+<div class="card-content">
+  <div class="album-cover">
+    <mat-icon>music_note</mat-icon>
+  </div>
+  @if(currentAudio) {
+  <div class="card-title">{{ currentAudio.title }}</div>
+  } @else {
+  <div class="card-title">Audio Player</div>
+  }
+  <audio #player controls class="player">
     @if(currentAudio) {
-    <mat-card-title>{{ currentAudio.title }}</mat-card-title>
-    } @else {
-    <mat-card-title>Audio Player</mat-card-title>
-    }
-  </mat-card-header>
-  <mat-card-content>
-    <div class="album-cover">
-      <label>Album Cover</label>
-    </div>
-  </mat-card-content>
-  <mat-card-footer class="card-footer">
-    <audio #player controls>
-      @if(currentAudio) {
-      <source [src]="currentAudio.audioUrl" type="audio/mpeg" />
-      } Your browser does not support the audio element.
-    </audio>
-  </mat-card-footer>
-</mat-card>
+    <source [src]="currentAudio.audioUrl" type="audio/mpeg" />
+    } Your browser does not support the audio element.
+  </audio>
+</div>

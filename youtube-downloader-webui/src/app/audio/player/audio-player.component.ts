@@ -7,19 +7,19 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
 import { map, Subscription } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/state';
 import { selectedSongSelector } from '../../store/song/song.selector';
 import { SongDetail } from '../../store/state/song.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-audio-player',
   templateUrl: './audio-player.component.html',
   styleUrl: './audio-player.component.scss',
-  imports: [MatCardModule],
+  imports: [MatIconModule],
 })
 export class AudioPlayerComponent implements OnInit, OnDestroy {
   @ViewChild('player')
