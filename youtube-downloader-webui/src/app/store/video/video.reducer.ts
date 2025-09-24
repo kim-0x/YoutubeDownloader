@@ -1,6 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialVideoState } from '../state/video.state';
 import {
+  downloadVideoFail,
+  downloadVideoSuccess,
   getVideoInfo,
   getVideoInfoFail,
   getVideoInfoSuccess,
@@ -19,6 +21,14 @@ export const videoReducer = createReducer(
       ...state.item,
       videoUrl,
     },
+    error: error,
+  })),
+  on(downloadVideoSuccess, (state, { payload }) => ({
+    ...state,
+    item: { ...state.item, title: payload.title, videoUrl: payload.videoUrl },
+  })),
+  on(downloadVideoFail, (state, { error }) => ({
+    ...state,
     error: error,
   }))
 );

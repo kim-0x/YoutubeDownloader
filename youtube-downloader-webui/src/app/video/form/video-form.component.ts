@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoDialogComponent } from '../dialog/video-dialog.component';
-import { DownloadService } from '../../service/download.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../store/state';
 import { VideoActionTypes } from '../../store/video/video.actions';
@@ -27,7 +26,6 @@ import { SongActionTypes } from '../../store/song/song.actions';
   ],
 })
 export class VideoFormComponent implements OnInit, OnDestroy {
-  private readonly _downloadService = inject(DownloadService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _subscription = new Subscription();
   private readonly _dialog: MatDialog = inject(MatDialog);
@@ -87,7 +85,7 @@ export class VideoFormComponent implements OnInit, OnDestroy {
     });
   }
 
-  async download() {
+  download() {
     const { videoUrl, title, startAt, endAt } = this.downloadForm.value;
 
     if (!videoUrl) {
@@ -95,17 +93,17 @@ export class VideoFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    try {
-      await this._downloadService.triggerDownload({
+    this._store.dispatch({
+      type: VideoActionTypes.downloadVideo,
+      args: {
         videoUrl,
         title,
         startAt,
         endAt,
-      });
-      this._dialog.open(VideoDialogComponent);
-    } catch (err) {
-      console.error('Download error: ' + err);
-    }
+      },
+    });
+
+    this._dialog.open(VideoDialogComponent);
   }
 
   ngOnDestroy(): void {

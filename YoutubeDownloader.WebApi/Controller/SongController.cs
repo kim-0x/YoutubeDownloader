@@ -33,6 +33,6 @@ public class SongController : ControllerBase
         );
 
         await _songService.AddSong(song);
-        return Ok(await this._songService.GetSong());
+        return Ok(song);
     }
 }

@@ -6,6 +6,7 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { Video } from '../state/video.model';
 
 const VIDEO_API_URL = 'https://localhost:7085/api/video';
+const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
 
 @Injectable()
 export class VideoEffects {
@@ -33,6 +34,29 @@ export class VideoEffects {
               })
             )
           )
+      )
+    );
+  });
+
+  downloadVideo = createEffect(() => {
+    return this._action$.pipe(
+      ofType(VideoActionTypes.downloadVideo),
+      switchMap(({ args }) =>
+        this._httpClient.post(DOWNLOAD_API_URL, args).pipe(
+          map(() => ({
+            type: VideoActionTypes.downloadVideoSuccess,
+            payload: {
+              videoUrl: args.videoUrl,
+              title: args.title,
+            },
+          })),
+          catchError((exception) =>
+            of({
+              type: VideoActionTypes.downloadVideoFail,
+              error: exception.error,
+            })
+          )
+        )
       )
     );
   });

@@ -3,20 +3,22 @@ import {
   loadSongs,
   loadSongsFail,
   loadSongsSuccess,
+  saveSongFail,
+  saveSongSuccess,
   selectSong,
 } from './song.actions';
 import { initialSongState } from '../state/song.state';
 import { SongItem } from '../state/song.model';
 
 function findSongDetail(items: Array<SongItem>, title: string) {
-  const songDetials = items.flatMap((x) => x.songDetails);
-  if (songDetials.length === 0)
+  const songDetails = items.flatMap((x) => x.songDetails);
+  if (songDetails.length === 0)
     return {
       title: '',
       audioUrl: '',
     };
 
-  const result = songDetials.find((x) => x.title === title);
+  const result = songDetails.find((x) => x.title === title);
   return {
     title: result ? result.title : '',
     audioUrl: result ? result.audioUrl : '',
@@ -37,5 +39,16 @@ export const songReducer = createReducer(
   on(selectSong, (state, { title }) => ({
     ...state,
     selected: findSongDetail(state.items, title),
+  })),
+  on(saveSongSuccess, (state, { payload }) => ({
+    ...state,
+    selected: {
+      title: payload.title,
+      audioUrl: payload.audioUrl,
+    },
+  })),
+  on(saveSongFail, (state, { error }) => ({
+    ...state,
+    error: error,
   }))
 );
