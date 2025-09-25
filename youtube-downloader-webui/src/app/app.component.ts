@@ -6,7 +6,6 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { SongListComponent } from './song/list/song-list.component';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +17,6 @@ import { CommonModule } from '@angular/common';
     VideoFormComponent,
     AudioPlayerComponent,
     SongListComponent,
-    CommonModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
