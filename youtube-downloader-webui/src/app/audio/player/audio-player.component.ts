@@ -7,18 +7,19 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatCardModule } from '@angular/material/card';
-import { map, merge, Subscription, withLatestFrom } from 'rxjs';
-import { SongService } from '../../service/song.service';
+import { map, Subscription } from 'rxjs';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DownloadEventsService } from '../../service/download-events.service';
-import { DownloadService } from '../../service/download.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/state';
+import { selectedSongSelector } from '../../store/song/song.selector';
+import { SongDetail } from '../../store/state/song.model';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-audio-player',
   templateUrl: './audio-player.component.html',
   styleUrl: './audio-player.component.scss',
-  imports: [MatCardModule],
+  imports: [MatIconModule],
 })
 export class AudioPlayerComponent implements OnInit, OnDestroy {
   @ViewChild('player')
@@ -28,28 +29,27 @@ export class AudioPlayerComponent implements OnInit, OnDestroy {
   private readonly _sanitizer = inject(DomSanitizer);
   private readonly _cd: ChangeDetectorRef = inject(ChangeDetectorRef);
 
-  private readonly _downloadService = inject(DownloadService);
-  private readonly _downloadEventsService = inject(DownloadEventsService);
-  private readonly _songService = inject(SongService);
-  private readonly _currentAudio$ = this._downloadEventsService.completed$.pipe(
-    withLatestFrom(this._downloadService.currentVideo$),
-    map(([url, currentVideo]) => ({
-      audioUrl: this._sanitizer.bypassSecurityTrustResourceUrl(url),
-      title: currentVideo.title,
-    }))
-  );
+  private readonly _store = inject(Store<AppState>);
+  private readonly _currentAudio$ = this._store
+    .select(selectedSongSelector)
+    .pipe(
+      map((value: SongDetail) => ({
+        audioUrl: this._sanitizer.bypassSecurityTrustResourceUrl(
+          value.audioUrl
+        ),
+        title: value.title,
+      }))
+    );
 
   currentAudio: { audioUrl: SafeResourceUrl; title: string } | undefined;
 
   ngOnInit(): void {
     this._subscription.add(
-      merge(this._currentAudio$, this._songService.currentSong$).subscribe(
-        (result) => {
-          this.currentAudio = result;
-          this._cd.detectChanges();
-          this.player?.nativeElement.load();
-        }
-      )
+      this._currentAudio$.subscribe((result) => {
+        this.currentAudio = result;
+        this._cd.detectChanges();
+        this.player?.nativeElement.load();
+      })
     );
   }
 

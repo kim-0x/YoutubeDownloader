@@ -1,13 +1,18 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { debounceTime, firstValueFrom, Subscription } from 'rxjs';
-import { VideoService } from '../../service/video.service';
+import { debounceTime, map, Subscription, withLatestFrom } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { VideoDialogComponent } from '../dialog/video-dialog.component';
-import { DownloadService } from '../../service/download.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/state';
+import { VideoActionTypes } from '../../store/video/video.actions';
+import { videoInfoSelector } from '../../store/video/video.selector';
+import { Video } from '../../store/state/video.model';
+import { DownloadEventsService } from '../../service/download-events.service';
+import { SongActionTypes } from '../../store/song/song.actions';
 
 @Component({
   selector: 'app-video-form',
@@ -21,11 +26,18 @@ import { DownloadService } from '../../service/download.service';
   ],
 })
 export class VideoFormComponent implements OnInit, OnDestroy {
-  private readonly _downloadService = inject(DownloadService);
-  private readonly _videoService = inject(VideoService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _subscription = new Subscription();
   private readonly _dialog: MatDialog = inject(MatDialog);
+  private readonly _store = inject(Store<AppState>);
+  private readonly _downloadEventsService = inject(DownloadEventsService);
+  private readonly _newSong$ = this._downloadEventsService.completed$.pipe(
+    withLatestFrom(this._store.select(videoInfoSelector)),
+    map(([url, currentVideo]) => ({
+      audioUrl: url,
+      title: currentVideo.title,
+    }))
+  );
 
   readonly downloadForm: FormGroup = this._formBuilder.group({
     videoUrl: [''],
@@ -43,27 +55,37 @@ export class VideoFormComponent implements OnInit, OnDestroy {
           if (url) this.getInfo(url);
         })
     );
+
+    this._subscription.add(
+      this._store.select(videoInfoSelector).subscribe((value: Video) => {
+        this.downloadForm.patchValue({
+          title: value.title,
+          startAt: '00:00:00',
+          endAt: value.duration,
+        });
+      })
+    );
+
+    this._subscription.add(
+      this._newSong$.subscribe((newSong) => {
+        this._store.dispatch({ type: SongActionTypes.SaveSong, args: newSong });
+      })
+    );
   }
 
-  async getInfo(url: string) {
-    if (!url) {
+  getInfo(videoUrl: string) {
+    if (!videoUrl) {
       alert('Please enter a valid URL.');
       return;
     }
 
-    try {
-      const result = await firstValueFrom(this._videoService.getInfo(url));
-      this.downloadForm.patchValue({
-        title: result.title,
-        startAt: '00:00:00',
-        endAt: result.duration,
-      });
-    } catch (err) {
-      console.error('Get video info error: ' + err);
-    }
+    this._store.dispatch({
+      type: VideoActionTypes.getVideoInfo,
+      videoUrl,
+    });
   }
 
-  async download() {
+  download() {
     const { videoUrl, title, startAt, endAt } = this.downloadForm.value;
 
     if (!videoUrl) {
@@ -71,17 +93,17 @@ export class VideoFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    try {
-      await this._downloadService.triggerDownload({
+    this._store.dispatch({
+      type: VideoActionTypes.downloadVideo,
+      args: {
         videoUrl,
         title,
         startAt,
         endAt,
-      });
-      this._dialog.open(VideoDialogComponent);
-    } catch (err) {
-      console.error('Download error: ' + err);
-    }
+      },
+    });
+
+    this._dialog.open(VideoDialogComponent);
   }
 
   ngOnDestroy(): void {

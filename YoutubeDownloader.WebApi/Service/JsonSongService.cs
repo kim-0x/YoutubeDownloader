@@ -36,7 +36,7 @@ public class JsonSongService : ISongService
     public async Task AddSong(SongModel newSong)
     {
         var list = this._internalSong.ToList();
-        list.Add(newSong);
+        list.Insert(0, newSong);
         var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
         string updatedSongDb = JsonSerializer.Serialize(list, jsonOptions);
 

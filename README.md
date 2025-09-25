@@ -3,8 +3,8 @@
 An application for downloading and converting YouTube videos to audio files. This repository includes:
 
 - **Console App**: Command-line interface for quick test infrastructure and core projects.
-- **Web API**: ASP.NET Core backend for managing download requests, progress notifications, and file serving.
-- **Angular Web UI**: Frontend for submitting download requests and getting progress in real time via SignalR.
+- **Web API**: ASP.NET Core backend for managing download requests, progress notifications, and file serving. Downloaded songs are currently managed in a JSON file for simplicity.
+- **Angular Web UI**: Frontend for submitting download requests and getting progress in real time via SignalR. NgRx is used for application state management.
 
 ## Features
 
@@ -13,11 +13,12 @@ An application for downloading and converting YouTube videos to audio files. Thi
 - Embed cover images into MP3 files.
 - Real-time progress updates via SignalR.
 - Serve downloadable audio files via API endpoint.
+- Display songs in a scrollable list for play and download.
 - Modular architecture with extensible services.
 
 ## Demo
 
-![App Demo](https://private-user-images.githubusercontent.com/101366262/491199170-15de7f0e-bc2b-4510-9ce1-fe4fc7d93d9e.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTgyMTU0MzMsIm5iZiI6MTc1ODIxNTEzMywicGF0aCI6Ii8xMDEzNjYyNjIvNDkxMTk5MTcwLTE1ZGU3ZjBlLWJjMmItNDUxMC05Y2UxLWZlNGZjN2Q5M2Q5ZS5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwOTE4JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDkxOFQxNzA1MzNaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1iMzIyY2ZiODJkNGM4ZDY4OGIzZDVkOTJkMzI2ZWJhZDc5NTZkNzY4ZDA1ZGI4MDAxNzJmMjMwZTZhNThhMGI1JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.-PI0NiLEI6L46B-q3kL4LUvQ7U9bUsmJ0pbID_xrIWo)
+![App Demo](https://private-user-images.githubusercontent.com/101366262/494123273-2f48a10c-5b03-4e07-b692-11529a9c18c3.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTg4MzM4MjcsIm5iZiI6MTc1ODgzMzUyNywicGF0aCI6Ii8xMDEzNjYyNjIvNDk0MTIzMjczLTJmNDhhMTBjLTViMDMtNGUwNy1iNjkyLTExNTI5YTljMThjMy5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwOTI1JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDkyNVQyMDUyMDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04OTcwOTBiNTU4MTJmZjExNDcwNjJhNjNkNzJmMTgwNGMxNTA0YmM0Y2E4NTBkYzNhMzg2MjAwZmQwNjYxMThkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.xYwK4j3iS95zq5DDevmuJFX1j4m_wRyc3QT9lbqW1eY)
 
 ## Getting Started
 
