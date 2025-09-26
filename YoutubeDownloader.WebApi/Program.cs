@@ -10,6 +10,11 @@ builder.Services.Configure<DownloadSetting>(
     builder.Configuration.GetSection("DownloadSettings"));
 builder.Services.Configure<DataStoreSettings>(
     builder.Configuration.GetSection("DataStoreSettings"));
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+    options.LowercaseQueryStrings = true;
+});
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,6 +28,8 @@ builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
 builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
 builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
 builder.Services.AddSingleton<ISongService, JsonSongService>();
+builder.Services.AddSingleton<ApplicationData>();
+builder.Services.AddSingleton<ILongTaskService, LongTaskConsoleService>();
 
 builder.Services.AddSignalR().AddJsonProtocol(option =>
 {
