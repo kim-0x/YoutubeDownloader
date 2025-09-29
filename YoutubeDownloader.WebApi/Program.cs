@@ -23,6 +23,7 @@ builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
 builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
 builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
 builder.Services.AddSingleton<ISongService, JsonSongService>();
+builder.Services.AddSingleton<IDownloadService, DownloadService>();
 
 builder.Services.AddSignalR().AddJsonProtocol(option =>
 {
