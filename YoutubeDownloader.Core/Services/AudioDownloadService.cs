@@ -16,7 +16,7 @@ public abstract class AudioDownloadService
         _progress = progress ?? new Progress<double>();
     }
 
-    public async Task ExecuteAsync(DownloadRequest request)
+    public async Task ExecuteAsync(DownloadRequest request, CancellationToken cancellationToken = default)
     {
         string? audioStreamFilePath = null;
         string? coverImagePath = null;
@@ -24,12 +24,12 @@ public abstract class AudioDownloadService
         try
         {
             OnStart();
-            
+
             // Get video info
-            var videoInfo = await GetVideoInfoAsync(request.VideoUrl);
+            var videoInfo = await GetVideoInfoAsync(request.VideoUrl, cancellationToken);
 
             // Download audio stream with file extension (e.g., .webm, .m4a)
-            audioStreamFilePath = await DownloadAudioStreamAsync(request.VideoUrl);
+            audioStreamFilePath = await DownloadAudioStreamAsync(request.VideoUrl, cancellationToken);
 
             // Map download and conversion request and convert to mp3
             var conversionRequest = new AudioConversionRequest(
@@ -40,16 +40,20 @@ public abstract class AudioDownloadService
                 request.EndAt
             );
 
-            var audioOutputFilePath = await ConvertToMp3Async(conversionRequest);
+            var audioOutputFilePath = await ConvertToMp3Async(conversionRequest, cancellationToken);
 
             if (!string.IsNullOrEmpty(videoInfo.ThumbnailUrl))
             {
                 // Embed cover image
-                coverImagePath = await GetCoverImageAsync(videoInfo.ThumbnailUrl);
+                coverImagePath = await GetCoverImageAsync(videoInfo.ThumbnailUrl, cancellationToken);
                 EmbedCover(audioOutputFilePath, coverImagePath);
             }
 
             OnCompleted(audioOutputFilePath);
+        }
+        catch (OperationCanceledException cancelException)
+        {
+            Console.WriteLine(cancelException.Message, cancelException.CancellationToken);
         }
         catch (Exception ex)
         {
@@ -71,24 +75,24 @@ public abstract class AudioDownloadService
         // Optionally override to handle start event (e.g., notify user)
     }
 
-    protected virtual Task<VideoModel> GetVideoInfoAsync(string videoUrl)
+    protected virtual Task<VideoModel> GetVideoInfoAsync(string videoUrl, CancellationToken cancellationToken = default)
     {
-        return _videoInfoProvider.GetInfoAsync(videoUrl, _progress);
+        return _videoInfoProvider.GetInfoAsync(videoUrl, _progress, cancellationToken);
     }
 
-    protected virtual Task<string> DownloadAudioStreamAsync(string videoUrl)
+    protected virtual Task<string> DownloadAudioStreamAsync(string videoUrl, CancellationToken cancellationToken = default)
     {
-        return _videoInfoProvider.DownloadAudioStreamAsync(videoUrl, _progress);
+        return _videoInfoProvider.DownloadAudioStreamAsync(videoUrl, _progress, cancellationToken);
     }
 
-    protected virtual Task<string> ConvertToMp3Async(AudioConversionRequest request)
+    protected virtual Task<string> ConvertToMp3Async(AudioConversionRequest request, CancellationToken cancellationToken = default)
     {
-        return _audioConverter.ConvertToMp3Async(request, _progress);
+        return _audioConverter.ConvertToMp3Async(request, _progress, cancellationToken);
     }
 
-    protected virtual Task<string> GetCoverImageAsync(string videoUrl)
+    protected virtual Task<string> GetCoverImageAsync(string videoUrl, CancellationToken cancellationToken = default)
     {
-        return _audioCoverEmbedder.GetCoverImageAsync(videoUrl, _progress);
+        return _audioCoverEmbedder.GetCoverImageAsync(videoUrl, _progress, cancellationToken);
     }
 
     protected virtual void EmbedCover(string audioFilePath, string coverImagePath)

@@ -33,8 +33,21 @@ do
         endAt = Console.ReadLine();
     }
 
-    var audioDownloadService = services.GetRequiredService<AudioDownloadService>();
-    await audioDownloadService.ExecuteAsync(new DownloadRequest(videoUrl, saveFolder, startAt, endAt));
+    try
+    {
+        var audioDownloadService = services.GetRequiredService<AudioDownloadService>();
+        var cancellationTokenSource = new CancellationTokenSource();
+        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(7));
+        await audioDownloadService.ExecuteAsync(new DownloadRequest(videoUrl, saveFolder, startAt, endAt), cancellationTokenSource.Token);
+    }
+    catch (OperationCanceledException cancelException)
+    {
+        Console.WriteLine(cancelException.Message, cancelException.CancellationToken);
+    }
+    catch (ApplicationException appException)
+    {
+        Console.WriteLine(appException.Message, appException.Message);
+    }
 
     Console.Write("Done. Do you want to download more? (Enter/ESC): ");
 } while (Console.ReadKey().Key != ConsoleKey.Escape);
