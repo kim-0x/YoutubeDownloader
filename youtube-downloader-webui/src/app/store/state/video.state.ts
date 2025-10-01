@@ -1,7 +1,7 @@
-import { Video } from './video.model';
+import { RunningTask, Video } from './video.model';
 
 export interface VideoState {
-  item: Video;
+  item: Video & RunningTask;
   error: any;
 }
 
@@ -10,6 +10,8 @@ export const initialVideoState: VideoState = {
     videoUrl: '',
     title: '',
     duration: '',
+    taskId: '',
+    message: '',
   },
   error: '',
 };

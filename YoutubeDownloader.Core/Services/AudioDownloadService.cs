@@ -20,6 +20,7 @@ public abstract class AudioDownloadService
     {
         string? audioStreamFilePath = null;
         string? coverImagePath = null;
+        string? audioOutputFilePath = null;
 
         try
         {
@@ -40,7 +41,7 @@ public abstract class AudioDownloadService
                 request.EndAt
             );
 
-            var audioOutputFilePath = await ConvertToMp3Async(conversionRequest, cancellationToken);
+            audioOutputFilePath = await ConvertToMp3Async(conversionRequest, cancellationToken);
 
             if (!string.IsNullOrEmpty(videoInfo.ThumbnailUrl))
             {
@@ -51,14 +52,18 @@ public abstract class AudioDownloadService
 
             OnCompleted(audioOutputFilePath);
         }
-        catch (OperationCanceledException cancelException)
+        catch (OperationCanceledException)
         {
-            Console.WriteLine(cancelException.Message, cancelException.CancellationToken);
+            if (!string.IsNullOrEmpty(audioOutputFilePath))
+            {
+                File.Delete(audioOutputFilePath);
+            }
+            throw;
         }
-        catch (Exception ex)
+        catch (Exception exception)
         {
             // Handle exceptions (e.g., log the error)
-            throw new ApplicationException("An error occurred during the audio download process.", ex);
+            throw new ApplicationException("An error occurred during the audio download process.", exception);
         }
         finally
         {

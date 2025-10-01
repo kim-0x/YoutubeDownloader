@@ -103,7 +103,7 @@ export class VideoFormComponent implements OnInit, OnDestroy {
       },
     });
 
-    this._dialog.open(VideoDialogComponent);
+    this._dialog.open(VideoDialogComponent, { disableClose: true });
   }
 
   ngOnDestroy(): void {

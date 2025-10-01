@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { VideoActionTypes } from './video.actions';
 import { catchError, map, of, switchMap } from 'rxjs';
-import { Video } from '../state/video.model';
+import { RunningTask, Video } from '../state/video.model';
 
 const VIDEO_API_URL = 'https://localhost:7085/api/video';
 const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
@@ -42,12 +42,14 @@ export class VideoEffects {
     return this._action$.pipe(
       ofType(VideoActionTypes.downloadVideo),
       switchMap(({ args }) =>
-        this._httpClient.post(DOWNLOAD_API_URL, args).pipe(
-          map(() => ({
+        this._httpClient.post<RunningTask>(DOWNLOAD_API_URL, args).pipe(
+          map((response) => ({
             type: VideoActionTypes.downloadVideoSuccess,
             payload: {
               videoUrl: args.videoUrl,
               title: args.title,
+              taskId: response.taskId,
+              message: response.message,
             },
           })),
           catchError((exception) =>
@@ -57,6 +59,31 @@ export class VideoEffects {
             })
           )
         )
+      )
+    );
+  });
+
+  cancelDownload = createEffect(() => {
+    return this._action$.pipe(
+      ofType(VideoActionTypes.cancelDownload),
+      switchMap(({ taskId }) =>
+        this._httpClient
+          .post<RunningTask>(`${DOWNLOAD_API_URL}/${taskId}/cancel`, {})
+          .pipe(
+            map((response) => ({
+              type: VideoActionTypes.cancelDownloadSuccess,
+              payload: {
+                taskId: response.taskId,
+                message: response.message,
+              },
+            })),
+            catchError((exception) =>
+              of({
+                type: VideoActionTypes.cancelDownloadFail,
+                error: exception.error,
+              })
+            )
+          )
       )
     );
   });

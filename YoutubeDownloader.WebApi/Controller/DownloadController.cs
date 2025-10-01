@@ -55,7 +55,7 @@ public class DownloadController : ControllerBase
             return Ok(new
             {
                 TaskId = taskId,
-                Message = $"Request task id {taskId} is accepted. Processing download."
+                Message = $"Request is accepted. Processing download."
             });
         }
         catch (Exception ex)
@@ -67,7 +67,18 @@ public class DownloadController : ControllerBase
     [HttpPost("{taskId}/cancel")]
     public ActionResult CancelDownload(string taskId)
     {
-        _downloadService.CancelTask(taskId);
-        return Ok($"Task Id: {taskId} was canceled");
+        try
+        {
+            _downloadService.CancelTask(taskId);
+            return Ok(new
+            {
+                TaskId = taskId,
+                Message = $"task was canceled"
+            });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Server cannot cancel {taskId}.");
+        }        
     }
 }

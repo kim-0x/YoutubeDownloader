@@ -10,3 +10,8 @@ export interface DownloadVideo {
   startAt: string;
   endAt: string;
 }
+
+export interface RunningTask {
+  taskId: string;
+  message: string;
+}

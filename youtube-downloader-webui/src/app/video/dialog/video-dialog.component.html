@@ -20,5 +20,16 @@
   </ng-container>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>Close</button>
+  <ng-container *ngIf="canCancel$ | async">
+    <button
+      *ngIf="taskId$ | async as taskId"
+      mat-button
+      (click)="handleCancel(taskId)"
+    >
+      Cancel
+    </button>
+  </ng-container>
+  <button *ngIf="!(canCancel$ | async)" mat-button mat-dialog-close>
+    Close
+  </button>
 </mat-dialog-actions>
