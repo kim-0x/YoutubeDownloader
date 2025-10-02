@@ -39,9 +39,13 @@ public class AudioConverter : IAudioConverter
         {
             throw new OperationCanceledException($"Convert video to MP3 was cancelled.", cancelException.CancellationToken);
         }
+        catch (IOException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw new OperationCanceledException($"Convert video to MP3 was cancelled.", cancellationToken);
+        }
         catch (Exception ex)
         {
             throw new InvalidOperationException("FFmpeg executables not found. Please ensure FFmpeg is installed and the path is set correctly.", ex);
-        }        
+        }
     }
 }

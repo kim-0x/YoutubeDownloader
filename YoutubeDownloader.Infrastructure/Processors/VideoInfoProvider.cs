@@ -32,10 +32,14 @@ public class VideoInfoProvider : IVideoInfoProvider
         }
         catch (OperationCanceledException cancelException)
         {
-            throw new OperationCanceledException($"Download audio stream for video {videoUrl} was cancelled.", cancelException.CancellationToken);
+            throw new OperationCanceledException($"Downloading audio stream for video {videoUrl} was cancelled.", cancelException.CancellationToken);
+        }
+        catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            throw new HttpRequestException($"Downloading video is forbidden", httpRequestException);
         }
         catch (Exception ex)
-        {
+        {            
             throw new InvalidOperationException("Failed to download audio stream from YouTube.", ex);
         }
     }

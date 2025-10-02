@@ -67,7 +67,6 @@ export class DownloadEventsService {
   private init() {
     this._currentStep = 0;
     this._progressMessage.clear();
-    this._error$.next('');
     this._start$.next();
   }
 }

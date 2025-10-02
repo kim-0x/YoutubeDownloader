@@ -48,7 +48,7 @@ public class DownloadService : IDownloadService
 
             return newTask;
         }
-        catch (OperationCanceledException)
+        catch (Exception)
         {
             return new DownloadTaskInfo();
         }

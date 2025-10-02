@@ -29,7 +29,5 @@
       Cancel
     </button>
   </ng-container>
-  <button *ngIf="!(canCancel$ | async)" mat-button mat-dialog-close>
-    Close
-  </button>
+  <button *ngIf="canClose$ | async" mat-button mat-dialog-close>Close</button>
 </mat-dialog-actions>

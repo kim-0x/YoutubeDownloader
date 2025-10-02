@@ -72,6 +72,13 @@ public class YoutubeAudioDownloadService : AudioDownloadService
             );
             throw;
         }
+        catch (HttpRequestException httpRequestException)
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Error, httpRequestException.Message)
+            );
+            throw;
+        }
     }
     protected override async Task<string> ConvertToMp3Async(AudioConversionRequest request, CancellationToken cancellationToken = default)
     {

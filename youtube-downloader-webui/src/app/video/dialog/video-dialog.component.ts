@@ -37,6 +37,11 @@ export class VideoDialogComponent {
     startWith(true)
   );
 
+  readonly canClose$ = merge(
+    this.canCancel$.pipe(map((value) => !value)),
+    this.errorMessage$.pipe(map(() => true))
+  );
+
   handleCancel(taskId: string) {
     this._store.dispatch({ type: VideoActionTypes.cancelDownload, taskId });
   }
