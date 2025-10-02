@@ -36,7 +36,7 @@ public class VideoInfoProvider : IVideoInfoProvider
         }
         catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode == System.Net.HttpStatusCode.Forbidden)
         {
-            throw new HttpRequestException($"Downloading video is forbidden", httpRequestException);
+            throw new HttpRequestException($"Downloading this video is forbidden", httpRequestException);
         }
         catch (Exception ex)
         {            

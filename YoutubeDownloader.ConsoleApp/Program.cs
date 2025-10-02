@@ -37,7 +37,7 @@ do
     {
         var audioDownloadService = services.GetRequiredService<AudioDownloadService>();
         var cancellationTokenSource = new CancellationTokenSource();
-        cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(7));
+        cancellationTokenSource.CancelAfter(TimeSpan.FromHours(1));
         await audioDownloadService.ExecuteAsync(new DownloadRequest(videoUrl, saveFolder, startAt, endAt), cancellationTokenSource.Token);
     }
     catch (OperationCanceledException cancelException)

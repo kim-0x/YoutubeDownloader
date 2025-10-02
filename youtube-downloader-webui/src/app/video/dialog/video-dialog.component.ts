@@ -32,13 +32,18 @@ export class VideoDialogComponent {
   readonly cancelMessage$ = this._downloadEventsService.cancel$;
   readonly taskId$ = this._store.select(taskIdSelector);
 
-  readonly canCancel$ = merge(this.cancelMessage$, this.completedMessage$).pipe(
-    map(() => false),
-    startWith(true)
-  );
+  private readonly _cancelledOrCompleted$ = merge(
+    this._downloadEventsService.cancel$,
+    this._downloadEventsService.completed$
+  ).pipe(map(() => true));
+
+  readonly canCancel$ = merge(
+    this._cancelledOrCompleted$.pipe(map((value) => !value)),
+    this.errorMessage$.pipe(map(() => false))
+  ).pipe(startWith(true));
 
   readonly canClose$ = merge(
-    this.canCancel$.pipe(map((value) => !value)),
+    this._cancelledOrCompleted$,
     this.errorMessage$.pipe(map(() => true))
   );
 
