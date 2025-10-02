@@ -4,6 +4,11 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { DownloadEventsService } from '../../service/download-events.service';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../store/state';
+import { taskIdSelector } from '../../store/video/video.selector';
+import { VideoActionTypes } from '../../store/video/video.actions';
+import { map, merge, startWith } from 'rxjs';
 
 @Component({
   templateUrl: './video-dialog.component.html',
@@ -19,8 +24,30 @@ import { DownloadEventsService } from '../../service/download-events.service';
 })
 export class VideoDialogComponent {
   private readonly _downloadEventsService = inject(DownloadEventsService);
+  private readonly _store = inject(Store<AppState>);
 
   readonly progressMessage$ = this._downloadEventsService.progress$;
   readonly errorMessage$ = this._downloadEventsService.error$;
   readonly completedMessage$ = this._downloadEventsService.completed$;
+  readonly cancelMessage$ = this._downloadEventsService.cancel$;
+  readonly taskId$ = this._store.select(taskIdSelector);
+
+  private readonly _cancelledOrCompleted$ = merge(
+    this._downloadEventsService.cancel$,
+    this._downloadEventsService.completed$
+  ).pipe(map(() => true));
+
+  readonly canCancel$ = merge(
+    this._cancelledOrCompleted$.pipe(map((value) => !value)),
+    this.errorMessage$.pipe(map(() => false))
+  ).pipe(startWith(true));
+
+  readonly canClose$ = merge(
+    this._cancelledOrCompleted$,
+    this.errorMessage$.pipe(map(() => true))
+  );
+
+  handleCancel(taskId: string) {
+    this._store.dispatch({ type: VideoActionTypes.cancelDownload, taskId });
+  }
 }

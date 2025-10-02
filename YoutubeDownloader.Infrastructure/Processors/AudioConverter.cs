@@ -1,7 +1,7 @@
 using Xabe.FFmpeg;
 public class AudioConverter : IAudioConverter
 {
-    public async Task<string> ConvertToMp3Async(AudioConversionRequest request, IProgress<double>? progress = null)
+    public async Task<string> ConvertToMp3Async(AudioConversionRequest request, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -32,12 +32,20 @@ public class AudioConverter : IAudioConverter
                 var percent = Math.Round(args.Duration.TotalSeconds / args.TotalLength.TotalSeconds, 2);
                 progress?.Report(0.5 + percent * 0.3);
             };
-            await conversion.Start();
+            await conversion.Start(cancellationToken);
             return outputFilePath;
+        }
+        catch (OperationCanceledException cancelException)
+        {
+            throw new OperationCanceledException($"Convert video to MP3 was cancelled.", cancelException.CancellationToken);
+        }
+        catch (IOException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw new OperationCanceledException($"Convert video to MP3 was cancelled.", cancellationToken);
         }
         catch (Exception ex)
         {
             throw new InvalidOperationException("FFmpeg executables not found. Please ensure FFmpeg is installed and the path is set correctly.", ex);
-        }        
+        }
     }
 }

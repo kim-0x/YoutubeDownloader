@@ -6,6 +6,7 @@ import { IProgressMessage, IReport } from '../model/report.model';
 export class DownloadEventsService {
   private readonly _error$: Subject<string> = new Subject<string>();
   private readonly _completed$: Subject<string> = new Subject<string>();
+  private readonly _cancel$: Subject<string> = new Subject<string>();
   private readonly _progress$: Subject<IProgressMessage> =
     new Subject<IProgressMessage>();
   private readonly _start$: Subject<void> = new Subject<void>();
@@ -20,14 +21,7 @@ export class DownloadEventsService {
   public completed$ = this._completed$.asObservable();
   public progress$ = this._progress$.asObservable();
   public start$ = this._start$.asObservable();
-
-  updateCompletedMessage(arg: string) {
-    this._completed$.next(arg);
-  }
-
-  updateErrorMessage(arg: string) {
-    this._error$.next(arg);
-  }
+  public cancel$ = this._cancel$.asObservable();
 
   public dispatchEvent(report: IReport) {
     switch (report.type) {
@@ -39,6 +33,9 @@ export class DownloadEventsService {
         break;
       case 'completed':
         this._completed$.next(report.message);
+        break;
+      case 'cancel':
+        this._cancel$.next(report.message);
         break;
       default:
         this._error$.next(report.message);
@@ -70,7 +67,6 @@ export class DownloadEventsService {
   private init() {
     this._currentStep = 0;
     this._progressMessage.clear();
-    this._error$.next('');
     this._start$.next();
   }
 }

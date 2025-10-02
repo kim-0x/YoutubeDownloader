@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { DownloadVideo, Video } from '../state/video.model';
+import { DownloadVideo, RunningTask, Video } from '../state/video.model';
 
 export enum VideoActionTypes {
   getVideoInfo = '[Video API] Get Youtube Video by URL',
@@ -8,6 +8,9 @@ export enum VideoActionTypes {
   downloadVideo = '[Video API] Download Video and Convert to a Audio',
   downloadVideoSuccess = '[Video API] Download Video Success',
   downloadVideoFail = '[Video API] Download Video Error',
+  cancelDownload = '[Video API] Cancel Video Download',
+  cancelDownloadSuccess = '[Video API] Cancel Video Download Success',
+  cancelDownloadFail = '[Video API] Cancel Video Download Error',
 }
 
 export const getVideoInfo = createAction(
@@ -37,5 +40,20 @@ export const downloadVideoSuccess = createAction(
 
 export const downloadVideoFail = createAction(
   VideoActionTypes.downloadVideoFail,
+  props<{ error: string }>()
+);
+
+export const cancelDownload = createAction(
+  VideoActionTypes.cancelDownload,
+  props<{ taskId: string }>()
+);
+
+export const cancelDownloadSuccess = createAction(
+  VideoActionTypes.cancelDownloadSuccess,
+  props<{ payload: RunningTask }>()
+);
+
+export const cancelDownloadFail = createAction(
+  VideoActionTypes.cancelDownloadFail,
   props<{ error: string }>()
 );

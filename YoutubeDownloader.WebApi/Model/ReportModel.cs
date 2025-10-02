@@ -4,6 +4,7 @@ public enum ReportType
     Start = 0,
     Progress = 1,
     Completed = 2,
+    Cancel = 3,
 }
 public record ReportModel(
    ReportType Type,

@@ -5,15 +5,15 @@ using Microsoft.Extensions.Caching.Memory;
 [Route("api/[controller]")]
 public class DownloadController : ControllerBase
 {
-    private readonly AudioDownloadService _audioDownloadService;
+    private readonly IDownloadService _downloadService;
     private readonly IOutputStorage _outputStorage;
     private readonly IMemoryCache _memoryCache;
     public DownloadController(
-        AudioDownloadService audioDownloadService,
+        IDownloadService downloadService,
         IOutputStorage outputStorage,
         IMemoryCache memoryCache)
     {
-        _audioDownloadService = audioDownloadService;
+        _downloadService = downloadService;
         _outputStorage = outputStorage;
         _memoryCache = memoryCache;
     }
@@ -49,12 +49,36 @@ public class DownloadController : ControllerBase
                 }
             }
 
-            var _ = Task.Run(async () => await _audioDownloadService.ExecuteAsync(request));
-            return Ok(new { Message = "Request accepted. Processing download." });
+            var taskId = Guid.NewGuid().ToString();
+            _downloadService.ExecuteAsync(taskId, request);
+
+            return Ok(new
+            {
+                TaskId = taskId,
+                Message = $"Request is accepted. Processing download."
+            });
         }
         catch (Exception ex)
         {
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
+    }
+
+    [HttpPost("{taskId}/cancel")]
+    public ActionResult CancelDownload(string taskId)
+    {
+        try
+        {
+            _downloadService.CancelTask(taskId);
+            return Ok(new
+            {
+                TaskId = taskId,
+                Message = $"task was canceled"
+            });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Server cannot cancel {taskId}.");
+        }        
     }
 }

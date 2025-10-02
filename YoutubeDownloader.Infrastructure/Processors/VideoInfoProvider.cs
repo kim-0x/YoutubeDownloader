@@ -4,13 +4,13 @@ using YoutubeExplode;
 public class VideoInfoProvider : IVideoInfoProvider
 {
     private readonly YoutubeClient _youtubeClient = new YoutubeClient();
-    public async Task<string> DownloadAudioStreamAsync(string videoUrl, IProgress<double>? progress = null)
+    public async Task<string> DownloadAudioStreamAsync(string videoUrl, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
         try
         {
             // Custom implementation for downloading audio stream from YouTube
             progress?.Report(0.1);
-            var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(videoUrl);
+            var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(videoUrl, cancellationToken);
             var audioStreams = streamManifest.GetAudioOnlyStreams();
             var bestAudio = audioStreams
                 .OrderByDescending(s => s.Bitrate)
@@ -23,23 +23,34 @@ public class VideoInfoProvider : IVideoInfoProvider
             var tempFile = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.{ext}");
 
             // Download audio stream weight 40% of the progress
-            await _youtubeClient.Videos.Streams.DownloadAsync(bestAudio, tempFile, new Progress<double>(p => progress?.Report(0.1 + p * 0.4)));
+            await _youtubeClient.Videos.Streams.DownloadAsync(bestAudio,
+                tempFile,
+                new Progress<double>(p => progress?.Report(0.1 + p * 0.4)),
+                cancellationToken);
 
             return tempFile;
         }
-        catch (Exception ex)
+        catch (OperationCanceledException cancelException)
         {
+            throw new OperationCanceledException($"Downloading audio stream for video {videoUrl} was cancelled.", cancelException.CancellationToken);
+        }
+        catch (HttpRequestException httpRequestException) when (httpRequestException.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            throw new HttpRequestException($"Downloading this video is forbidden", httpRequestException);
+        }
+        catch (Exception ex)
+        {            
             throw new InvalidOperationException("Failed to download audio stream from YouTube.", ex);
         }
     }
 
-    public async Task<VideoModel> GetInfoAsync(string videoUrl, IProgress<double>? progress = null)
+    public async Task<VideoModel> GetInfoAsync(string videoUrl, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
     {
         try
         {
             // Implementation for YouTube video info retrieval
             progress?.Report(0);
-            var video = await _youtubeClient.Videos.GetAsync(videoUrl);
+            var video = await _youtubeClient.Videos.GetAsync(videoUrl, cancellationToken);
             progress?.Report(0.1);
             return new VideoModel
             {
@@ -50,6 +61,10 @@ public class VideoInfoProvider : IVideoInfoProvider
                     .OrderBy(t => t.Resolution.Width * t.Resolution.Height)
                     .Last().Url
             };
+        }
+        catch (OperationCanceledException cancelException)
+        {
+            throw new OperationCanceledException($"Get video info from url {videoUrl} was cancelled.", cancelException.CancellationToken);
         }
         catch (Exception ex)
         {

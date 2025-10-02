@@ -8,3 +8,8 @@ export const videoInfoSelector = createSelector(
   videoSelector,
   (state: VideoState) => state.item
 );
+
+export const taskIdSelector = createSelector(
+  videoSelector,
+  (state: VideoState) => state.item.taskId
+);

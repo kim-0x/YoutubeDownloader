@@ -28,38 +28,72 @@ public class YoutubeAudioDownloadService : AudioDownloadService
             new ReportModel(ReportType.Start, "Download started...", 0, 5));
     }
     
-    protected override async Task<VideoModel> GetVideoInfoAsync(string videoUrl)
+    protected override async Task<VideoModel> GetVideoInfoAsync(string videoUrl, CancellationToken cancellationToken = default)
     {
-        await _stageNotifier.ReportStageAsync(
-            new ReportModel(ReportType.Progress, "Fetching video information...", 1, 5));
-
-        _progressNotifier.Report(0.0);
-        if (_memoryCache.TryGetValue<VideoModel>(videoUrl, out var videoInfo))
+        try
         {
-            if (videoInfo is not null)
-            {
-                _progressNotifier.Report(0.1);
-                return videoInfo;
-            }
-        }
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Progress, "Fetching video information...", 1, 5));
 
-        videoInfo = await base.GetVideoInfoAsync(videoUrl);
-        _progressNotifier.Report(0.1);
-        return videoInfo;
+            _progressNotifier.Report(0.0);
+            if (_memoryCache.TryGetValue<VideoModel>(videoUrl, out var videoInfo))
+            {
+                if (videoInfo is not null)
+                {
+                    _progressNotifier.Report(0.1);
+                    return videoInfo;
+                }
+            }
+
+            videoInfo = await base.GetVideoInfoAsync(videoUrl, cancellationToken);
+            _progressNotifier.Report(0.1);
+            return videoInfo;
+        }
+        catch (OperationCanceledException)
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Cancel, "Get video info was canceled.")
+            );
+            throw;
+        }
     }
-    protected override async Task<string> DownloadAudioStreamAsync(string videoUrl)
+    protected override async Task<string> DownloadAudioStreamAsync(string videoUrl, CancellationToken cancellationToken = default)
     {
-        await _stageNotifier.ReportStageAsync(
-            new ReportModel(ReportType.Progress, "Starting audio download...", 2, 5));
-        return await base.DownloadAudioStreamAsync(videoUrl);
+        try
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Progress, "Starting audio download...", 2, 5));
+            return await base.DownloadAudioStreamAsync(videoUrl, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Cancel, "Download audio stream was canceled.")
+            );
+            throw;
+        }
+        catch (HttpRequestException httpRequestException)
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Error, httpRequestException.Message)
+            );
+            throw;
+        }
     }
-    protected override async Task<string> ConvertToMp3Async(AudioConversionRequest request)
+    protected override async Task<string> ConvertToMp3Async(AudioConversionRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
             await _stageNotifier.ReportStageAsync(
                 new ReportModel(ReportType.Progress, "Converting audio to MP3...", 3, 5));
-            return await base.ConvertToMp3Async(request);
+            return await base.ConvertToMp3Async(request, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Cancel, "Convert audio to MP3 was canceled.")
+            );
+            throw;
         }
         catch (Exception ex)
         {
@@ -68,11 +102,21 @@ public class YoutubeAudioDownloadService : AudioDownloadService
             throw;
         }
     }
-    protected override async Task<string> GetCoverImageAsync(string videoUrl)
+    protected override async Task<string> GetCoverImageAsync(string videoUrl, CancellationToken cancellationToken = default)
     {
-        await _stageNotifier.ReportStageAsync(
-            new ReportModel(ReportType.Progress, "Downloading cover image...", 4, 5));
-        return await base.GetCoverImageAsync(videoUrl);
+        try
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Progress, "Downloading cover image...", 4, 5));
+            return await base.GetCoverImageAsync(videoUrl, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            await _stageNotifier.ReportStageAsync(
+                new ReportModel(ReportType.Cancel, "Download cover image was canceled.")
+            );
+            throw;
+        }
     }
     protected override async void EmbedCover(string audioOutputFilePath, string coverImagePath)
     {
