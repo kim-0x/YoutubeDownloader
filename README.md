@@ -12,13 +12,13 @@ An application for downloading and converting YouTube videos to audio files. Thi
 - Convert audio streams to MP3 format.
 - Embed cover images into MP3 files.
 - Real-time progress updates via SignalR.
-- Serve downloadable audio files via API endpoint.
+- Serve downloadable audio files.
 - Display songs in a scrollable list for play and download.
 - Modular architecture with extensible services.
 
 ## Demo
 
-![App Demo](https://private-user-images.githubusercontent.com/101366262/494123273-2f48a10c-5b03-4e07-b692-11529a9c18c3.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTg4MzM4MjcsIm5iZiI6MTc1ODgzMzUyNywicGF0aCI6Ii8xMDEzNjYyNjIvNDk0MTIzMjczLTJmNDhhMTBjLTViMDMtNGUwNy1iNjkyLTExNTI5YTljMThjMy5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwOTI1JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDkyNVQyMDUyMDdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT04OTcwOTBiNTU4MTJmZjExNDcwNjJhNjNkNzJmMTgwNGMxNTA0YmM0Y2E4NTBkYzNhMzg2MjAwZmQwNjYxMThkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.xYwK4j3iS95zq5DDevmuJFX1j4m_wRyc3QT9lbqW1eY)
+![App Demo](https://private-user-images.githubusercontent.com/101366262/496762274-157df35a-6591-431c-ac4a-6d7d304772aa.gif?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTk0MjYzNTcsIm5iZiI6MTc1OTQyNjA1NywicGF0aCI6Ii8xMDEzNjYyNjIvNDk2NzYyMjc0LTE1N2RmMzVhLTY1OTEtNDMxYy1hYzRhLTZkN2QzMDQ3NzJhYS5naWY_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUxMDAyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MTAwMlQxNzI3MzdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1lODFjZWRiZGVlNzMyNGIwNDc4NjFkODNlYjQ4Nzg4NGM0M2MyMmNiMDA1ODJlZjQ5ZDIzYzIzNWVkZGIzMTA1JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.l9HkM9cd-xhCFCcGi2Jwl4tWpHgSbO86y6FKRgVSrSo)
 
 ## Getting Started
 
@@ -55,6 +55,7 @@ Open [http://localhost:4200](http://localhost:4200) in your browser.
 ## API Endpoints
 
 - `POST /api/download` — Start a new download request.
+- `POST /api/download/{taskId}/cancel` — Cancel download video request.
 - `GET /api/video` — Get video information such as title and duration.
 - `GET /api/song` — Get list of song has been download.
 - `POST /api/song` — Add a new song to the list.
