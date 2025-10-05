@@ -4,9 +4,10 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { VideoActionTypes } from './video.actions';
 import { catchError, map, of, switchMap } from 'rxjs';
 import { RunningTask, Video } from '../state/video.model';
+import { environment } from '../../../environments/environment';
 
-const VIDEO_API_URL = 'https://localhost:7085/api/video';
-const DOWNLOAD_API_URL = 'https://localhost:7085/api/download';
+const VIDEO_API_URL = `${environment.apiUrl}/video`;
+const DOWNLOAD_API_URL = `${environment.apiUrl}/download`;
 
 @Injectable()
 export class VideoEffects {
