@@ -1,6 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 7085
 
 # Install FFmpeg
 RUN apt-get update && \
