@@ -3,8 +3,9 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, exhaustMap, map, of } from 'rxjs';
 import { loadSongs, SongActionTypes } from './song.actions';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
-const SONG_API_URL = 'https://localhost:7085/api/song';
+const SONG_API_URL = `${environment.apiUrl}/song`;
 
 @Injectable()
 export class SongsEffects {

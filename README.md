@@ -52,6 +52,13 @@ ng serve
 
 Open [http://localhost:4200](http://localhost:4200) in your browser.
 
+### Deploying to Docker
+
+```sh
+cd YoutubeDownloader
+docker compose -f 'docker-compose.yml' up -d --build
+```
+
 ## API Endpoints
 
 - `POST /api/download` — Start a new download request.

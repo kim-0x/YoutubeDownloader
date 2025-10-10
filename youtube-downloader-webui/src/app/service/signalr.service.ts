@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { DownloadEventsService } from './download-events.service';
+import { environment } from '../../environments/environment';
 
-const HUB_URL = 'https://localhost:7085/hubs/notification';
+const HUB_URL = environment.hubUrl;
 
 @Injectable({
   providedIn: 'root',

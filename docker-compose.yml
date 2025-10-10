@@ -1,0 +1,26 @@
+
+services:
+  webapi:
+    build:
+      context: .
+      dockerfile: deployment/webapi/Dockerfile
+    expose:
+      - "8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - mynet
+
+  webui:
+    build:
+      context: .
+      dockerfile: deployment/webui/Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - webapi
+    networks:
+      - mynet
+
+networks:
+  mynet:
