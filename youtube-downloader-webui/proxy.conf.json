@@ -4,5 +4,11 @@
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
+  },
+  "/downloads": {
+    "target": "http://localhost:5279",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
   }
 }

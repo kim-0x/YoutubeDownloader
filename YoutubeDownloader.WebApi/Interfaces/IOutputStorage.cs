@@ -1,5 +1,5 @@
 public interface IOutputStorage
 {
     public string GetStoragePath();
-    public string GetFileInPublicUrl(string physicalPath);
+    public string GetFileInPublicPath(string physicalPath);
 }

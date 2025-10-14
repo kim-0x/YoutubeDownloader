@@ -127,7 +127,7 @@ public class YoutubeAudioDownloadService : AudioDownloadService
     
     protected override async void OnCompleted(string audioFilePath)
     {
-        var hostedAudioPath = _outputStorage.GetFileInPublicUrl(audioFilePath);
+        var hostedAudioPath = _outputStorage.GetFileInPublicPath(audioFilePath);
         await _stageNotifier.ReportStageAsync(
             new ReportModel(ReportType.Completed, hostedAudioPath));
     }

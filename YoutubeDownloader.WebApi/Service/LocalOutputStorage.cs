@@ -15,13 +15,15 @@ public class LocalOutputStorage : IOutputStorage
         return Path.Combine(_environment.WebRootPath, _options.CurrentValue.OutputDirectory);
     }
 
-    public string GetFileInPublicUrl(string physicalPath)
+    public string GetFileInPublicPath(string physicalPath)
     {
+        // physicalPath contains the full system or computer path to the file
+        // we need to strip out the part that is not public (wwwroot)
         var outputDir = _options.CurrentValue.OutputDirectory;
         var index = physicalPath.IndexOf(outputDir, StringComparison.OrdinalIgnoreCase);
         if (index >= 0)
         {
-            return Path.Combine(_options.CurrentValue.PublicBaseUrl, physicalPath.Substring(index).Replace("\\", "/"));
+            return physicalPath.Substring(index).Replace("\\", "/");
         }
         return string.Empty;
     }
