@@ -1,6 +1,5 @@
 public sealed class DataStoreSettings
 {
-    public string PublicBaseUrl { get; set; } = "https://localhost:7085";
     public string SongDbDirectory { get; set; } = "json";
     public string DbName { get; set; } = "song.json";
 }
