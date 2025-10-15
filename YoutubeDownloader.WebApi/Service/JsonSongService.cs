@@ -6,11 +6,14 @@ public class JsonSongService : ISongService
 {
     private readonly IOptionsMonitor<DataStoreSettings> _options;
     private readonly IWebHostEnvironment _environment;
+    private readonly ILogger<ISongService> _logger;
     public JsonSongService(IOptionsMonitor<DataStoreSettings> options,
-        IWebHostEnvironment environment)
+        IWebHostEnvironment environment,
+        ILogger<ISongService> logger)
     {
         this._options = options;
         this._environment = environment;
+        this._logger = logger;
     }
     private IEnumerable<SongModel> _internalSong = new List<SongModel>();
 
@@ -18,19 +21,25 @@ public class JsonSongService : ISongService
     {
         get
         {
-            try
-            {
-                var dbFile = Path.Combine(_environment.WebRootPath,
-                 _options.CurrentValue.SongDbDirectory,
+            var dbFile = Path.Combine(_environment.WebRootPath,
+                _options.CurrentValue.SongDbDirectory,
                 _options.CurrentValue.DbName);
+            
+            if (File.Exists(dbFile)) return dbFile;
 
-                return dbFile;
-            }
-            catch (ArgumentNullException exception)
+            if (!Directory.Exists(Path.GetDirectoryName(dbFile)))
             {
-                Console.WriteLine(exception);
-                throw new Exception(exception.Message);
+                _logger.LogWarning("Json data store directory does not exist. Creating new directory");
+                Directory.CreateDirectory(Path.GetDirectoryName(dbFile)!);
             }
+            
+            using (FileStream stream = File.Create(dbFile))
+            {
+                byte[] emptyContent = System.Text.Encoding.UTF8.GetBytes("[]");
+                stream.Write(emptyContent);
+            }
+
+            return dbFile;          
         }
     }
     public async Task AddSong(SongModel newSong)
@@ -45,15 +54,6 @@ public class JsonSongService : ISongService
 
     public async Task<IEnumerable<SongModel>> GetSong()
     {
-        if (!File.Exists(DbFilePath))
-        {
-            using (FileStream stream = File.Create(DbFilePath))
-            {
-                byte[] emptyContent = System.Text.Encoding.UTF8.GetBytes("[]");
-                await stream.WriteAsync(emptyContent);
-            }
-        }
-
         using (FileStream fileStream = File.OpenRead(DbFilePath))
         {
             try
@@ -67,7 +67,7 @@ public class JsonSongService : ISongService
             }
             catch (JsonException exception)
             {
-                Console.WriteLine(exception);
+                _logger.LogError(exception, "Failed to deserialize song data store.");
             }
         }
 
