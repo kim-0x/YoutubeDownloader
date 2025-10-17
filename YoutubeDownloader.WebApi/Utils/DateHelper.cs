@@ -1,21 +1,30 @@
+using System.Globalization;
+
 public static class DateHelper
 {
     public static string ToDateLabel(this string inputDate)
     {
         var today = DateTime.Today;
-        if (inputDate == today.ToString("d"))
+        
+        if (!DateTimeOffset.TryParse(inputDate, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var dto)
+         && !DateTimeOffset.TryParse(inputDate, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out dto))
+        {
+            return "Unknown";
+        }
+
+        var date = dto.ToLocalTime().Date;
+        if (date == today)
         {
             return "Today";
         }
-        else if (inputDate == today.AddDays(-1).ToString("d"))
+        else if (date == today.AddDays(-1))
         {
             return "Yesterday";
         }
         else
         {
             var isThisWeek = Enumerable.Range(2, 5)
-                .Any(day => inputDate == today.AddDays(Math.Sign(-1) * day)
-                .ToString("d"));
+                .Any(day => date == today.AddDays(Math.Sign(-1) * day));
 
             return isThisWeek ? "This Week" : "Old";
         }

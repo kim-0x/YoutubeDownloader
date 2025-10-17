@@ -27,6 +27,8 @@ try
     builder.Services.Configure<DataStoreSettings>(
         builder.Configuration.GetSection("DataStoreSettings"));
 
+    builder.Services.AddSqliteDbContext<AppDbContext>(builder.Configuration, builder.Environment);
+
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -38,7 +40,7 @@ try
     builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
     builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
     builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
-    builder.Services.AddSingleton<ISongService, JsonSongService>();
+    builder.Services.AddTransient<ISongService, SqlitSongService>();
     builder.Services.AddSingleton<IDownloadService, DownloadService>();
 
     builder.Services.AddSignalR().AddJsonProtocol(option =>
@@ -67,7 +69,19 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseStaticFiles();
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        OnPrepareResponse = ctx =>
+        {
+            var path = ctx.File.PhysicalPath;
+            if (path is not null && path.Contains(Path.Combine("wwwroot", "data")))
+            {
+                ctx.Context.Response.StatusCode = 403;
+                ctx.Context.Response.ContentLength = 0;
+                ctx.Context.Response.Body = Stream.Null;
+            }
+        }
+    });
     app.UseHttpsRedirection();
     app.UseCors();
     app.MapControllers();
