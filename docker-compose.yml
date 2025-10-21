@@ -6,6 +6,9 @@ services:
       dockerfile: deployment/webapi/Dockerfile
     expose:
       - "8080"
+    volumes:
+      - ./deployment/storage/data:/app/data
+      - ./deployment/storage/files:/app/wwwroot/downloads
     environment:
       - ASPNETCORE_ENVIRONMENT=Staging
     networks:

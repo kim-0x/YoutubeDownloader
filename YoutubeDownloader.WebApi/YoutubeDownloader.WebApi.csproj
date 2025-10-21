@@ -23,4 +23,8 @@
     <ProjectReference Include="../YoutubeDownloader.Infrastructure/YoutubeDownloader.Infrastructure.csproj" />
   </ItemGroup>
 
+  <Target Name="CreateWebRoot" AfterTargets="Publish">
+    <MakeDir Directories="$(PublishDir)wwwroot" Condition="!Exists('$(PublishDir)wwwroot')" />
+  </Target>
+
 </Project>

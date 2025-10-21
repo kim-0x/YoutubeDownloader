@@ -1,9 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-RUN mkdir ./data
-VOLUME [ "./data" ]
-
 # Install FFmpeg
 RUN apt-get update && \
     apt-get install -y ffmpeg && \
@@ -34,7 +31,7 @@ FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 COPY ./YoutubeDownloader.WebApi/Scripts ./scripts
-COPY entrypoint.sh .
+COPY ./deployment/scripts/entrypoint.sh .
 RUN chmod +x ./entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
