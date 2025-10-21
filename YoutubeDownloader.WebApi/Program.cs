@@ -38,7 +38,7 @@ try
     builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
     builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
     builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
-    builder.Services.AddTransient<ISongService, SqlitSongService>();
+    builder.Services.AddTransient<ISongService, SongService>();
     builder.Services.AddSingleton<IDownloadService, DownloadService>();
 
     builder.Services.AddSignalR().AddJsonProtocol(option =>

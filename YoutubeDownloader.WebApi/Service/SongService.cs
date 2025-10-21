@@ -1,10 +1,10 @@
 
 using Microsoft.EntityFrameworkCore;
 
-public class SqlitSongService : ISongService
+public class SongService : ISongService
 {
     private readonly AppDbContext _dbContext;
-    public SqlitSongService(AppDbContext dbContext)
+    public SongService(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
