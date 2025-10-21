@@ -69,19 +69,7 @@ try
         app.UseSwaggerUI();
     }
 
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        OnPrepareResponse = ctx =>
-        {
-            var path = ctx.File.PhysicalPath;
-            if (path is not null && path.Contains(Path.Combine("wwwroot", "data")))
-            {
-                ctx.Context.Response.StatusCode = 403;
-                ctx.Context.Response.ContentLength = 0;
-                ctx.Context.Response.Body = Stream.Null;
-            }
-        }
-    });
+    app.UseStaticFiles();
     app.UseHttpsRedirection();
     app.UseCors();
     app.MapControllers();

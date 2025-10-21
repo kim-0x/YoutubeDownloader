@@ -10,11 +10,11 @@ public static class SqliteServiceCollectionExtensions
     {
         var connectionString = configuration.GetConnectionString("SqliteConnection");
 
-        if (connectionString?.Contains("{WEBROOT}") == true)
+        if (connectionString?.Contains("{APPDATA}") == true)
         {
-            var webRootPath = environment.WebRootPath ?? Path.Combine(AppContext.BaseDirectory, "wwwroot");
+            var webRootPath = environment.WebRootPath.Replace("wwwroot", "") ?? AppContext.BaseDirectory;
             Directory.CreateDirectory(Path.Combine(webRootPath, "data"));
-            connectionString = connectionString.Replace("{WEBROOT}", webRootPath);
+            connectionString = connectionString.Replace("{APPDATA}", webRootPath);
         }
         
         services.AddDbContext<TContext>(options =>
