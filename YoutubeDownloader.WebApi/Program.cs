@@ -24,9 +24,7 @@ try
 
     builder.Services.Configure<DownloadSetting>(
         builder.Configuration.GetSection("DownloadSettings"));
-    builder.Services.Configure<DataStoreSettings>(
-        builder.Configuration.GetSection("DataStoreSettings"));
-
+    
     builder.Services.AddSqliteDbContext<AppDbContext>(builder.Configuration, builder.Environment);
 
     // Add services to the container.
