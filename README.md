@@ -3,7 +3,7 @@
 An application for downloading and converting YouTube videos to audio files. This repository includes:
 
 - **Console App**: Command-line interface for quick test infrastructure and core projects.
-- **Web API**: ASP.NET Core backend for managing download requests, progress notifications, and file serving. Downloaded songs are currently managed in a JSON file for simplicity.
+- **Web API**: ASP.NET Core backend for managing download requests, progress notifications, and file serving. Downloaded songs are currently managed in `SQLite` for simplicity and Entity Framework Core as ORM.
 - **Angular Web UI**: Frontend for submitting download requests and getting progress in real time via SignalR. NgRx is used for application state management.
 
 ## Features
@@ -25,6 +25,8 @@ An application for downloading and converting YouTube videos to audio files. Thi
 ### Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
+- [EF Core Command-line](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli#install-the-tools) install cli for database migration and generated sql script for `Docker`
+- [SQLite Command-line](https://sqlite.org/cli.html) It is optional but for interacting with database
 - [Node.js & npm](https://nodejs.org/) (for Angular frontend)
 - [FFmpeg](https://ffmpeg.org/) installed and available in your system PATH
 

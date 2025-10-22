@@ -24,8 +24,8 @@ try
 
     builder.Services.Configure<DownloadSetting>(
         builder.Configuration.GetSection("DownloadSettings"));
-    builder.Services.Configure<DataStoreSettings>(
-        builder.Configuration.GetSection("DataStoreSettings"));
+    
+    builder.Services.AddSqliteDbContext<AppDbContext>(builder.Configuration, builder.Environment);
 
     // Add services to the container.
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -38,7 +38,7 @@ try
     builder.Services.AddSingleton<IStageNotifier, StageNotifier>();
     builder.Services.AddSingleton<IProgress<double>, ProgressNotifier>();
     builder.Services.AddSingleton<IOutputStorage, LocalOutputStorage>();
-    builder.Services.AddSingleton<ISongService, JsonSongService>();
+    builder.Services.AddTransient<ISongService, SongService>();
     builder.Services.AddSingleton<IDownloadService, DownloadService>();
 
     builder.Services.AddSignalR().AddJsonProtocol(option =>

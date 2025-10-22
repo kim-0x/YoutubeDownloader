@@ -7,7 +7,11 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN which ffmpeg
+# Install Sqlite3 cli
+RUN apt-get update && \
+    apt-get install -y sqlite3 && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
@@ -26,5 +30,8 @@ RUN dotnet publish -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY ./YoutubeDownloader.WebApi/Scripts ./scripts
+COPY ./deployment/scripts/entrypoint.sh .
+RUN chmod +x ./entrypoint.sh
 
-ENTRYPOINT ["dotnet", "YoutubeDownloader.WebApi.dll"]
+ENTRYPOINT ["./entrypoint.sh"]
