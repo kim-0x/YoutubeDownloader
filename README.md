@@ -26,6 +26,7 @@ An application for downloading and converting YouTube videos to audio files. Thi
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download)
 - [EF Core Command-line](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli#install-the-tools) install cli for database migration and generated sql script for `Docker`
+- [SQLite Command-line](https://sqlite.org/cli.html) It is optional but for interacting with database
 - [Node.js & npm](https://nodejs.org/) (for Angular frontend)
 - [FFmpeg](https://ffmpeg.org/) installed and available in your system PATH
 
