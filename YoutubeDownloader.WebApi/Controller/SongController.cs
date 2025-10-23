@@ -5,9 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 public class SongController : ControllerBase
 {
     private readonly ISongService _songService;
-    public SongController(ISongService songService)
+    private readonly IOutputStorage _outputStorage;
+    public SongController(ISongService songService, IOutputStorage outputStorage)
     {
         this._songService = songService;
+        this._outputStorage = outputStorage;
     }
 
     [HttpGet]
@@ -29,7 +31,7 @@ public class SongController : ControllerBase
             );
         return Ok(result);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> AddSong([FromBody] SongDto newSong)
     {
@@ -41,5 +43,23 @@ public class SongController : ControllerBase
 
         await _songService.AddSong(song);
         return Ok(song);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteSong(int id)
+    {
+        var song = await _songService.GetSongById(id);
+        if (song is null)
+        {
+            return NotFound();
+        }
+        var isFileDeleted = _outputStorage.DeleteFile(song.AudioUrl);
+        var totalDeleted = await _songService.DeleteSong(id);
+        
+        return Ok(new
+        {
+            Id = id,
+            Message = isFileDeleted && (totalDeleted > 0) ? "Song and associated file deleted successfully." : "Song deleted, but failed to delete associated file."
+        });
     }
 }

@@ -24,6 +24,11 @@ try
 
     builder.Services.Configure<DownloadSetting>(
         builder.Configuration.GetSection("DownloadSettings"));
+    builder.Services.Configure<RouteOptions>(options =>
+    {
+        options.LowercaseUrls = true;
+        options.LowercaseQueryStrings = true;
+    });
     
     builder.Services.AddSqliteDbContext<AppDbContext>(builder.Configuration, builder.Environment);
 

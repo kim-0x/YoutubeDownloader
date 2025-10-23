@@ -29,7 +29,29 @@ public class SongService : ISongService
                 s.Title,
                 s.AudioPath
             )).ToListAsync();
-        
+
         return list;
+    }
+
+    public async Task<int> DeleteSong(int id)
+    {
+        var affectedRows = await _dbContext.Songs
+            .Where(s => s.Id == id)
+            .ExecuteDeleteAsync();
+
+        await _dbContext.SaveChangesAsync();
+
+        return affectedRows;
+    }
+
+    public async Task<SongModel?> GetSongById(int id)
+    {
+        return await _dbContext.Songs.Where(s => s.Id == id)
+            .Select(s => new SongModel(
+                s.Id,
+                s.DateCreated.ToString("o"),
+                s.Title,
+                s.AudioPath
+            )).FirstOrDefaultAsync();
     }
 }

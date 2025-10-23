@@ -27,4 +27,16 @@ public class LocalOutputStorage : IOutputStorage
         }
         return string.Empty;
     }
+
+    public bool DeleteFile(string audioPath)
+    {
+        var physicalPath = Path.Combine(_environment.WebRootPath, audioPath);
+
+        if (File.Exists(physicalPath))
+        {
+            File.Delete(physicalPath);
+            return true;
+        }
+        return false;
+    }
 }
