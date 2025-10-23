@@ -9,5 +9,5 @@ export interface SongState {
 export const initialSongState: SongState = {
   items: [],
   error: '',
-  selected: { title: '', audioUrl: '' },
+  selected: { id: 0, title: '', audioUrl: '' },
 };

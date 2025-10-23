@@ -4,6 +4,7 @@ export interface SongItem {
 }
 
 export interface SongDetail {
+  id: number;
   title: string;
   audioUrl: string;
 }

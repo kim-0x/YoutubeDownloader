@@ -60,7 +60,7 @@ export class SongsEffects {
   });
 
   private flatResult(
-    payload: Map<string, Array<{ title: string; audioUrl: string }>>
+    payload: Map<string, Array<{ id: number; title: string; audioUrl: string }>>
   ) {
     return Array.from(payload).map(([key, value]) => {
       return {

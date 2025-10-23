@@ -18,7 +18,7 @@ export const selectedSongSelector = createSelector(
 export const firstOrDefaultSongSelector = createSelector(
   songItemsSelector,
   (items: SongItem[]) => {
-    let detail: SongDetail = { title: '', audioUrl: '' };
+    let detail: SongDetail = { id: 0, title: '', audioUrl: '' };
 
     if (items.length > 0 && items[0].songDetails.length > 0) {
       detail.title = items[0].songDetails[0].title;

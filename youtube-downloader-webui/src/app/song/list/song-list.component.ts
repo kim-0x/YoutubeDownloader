@@ -20,6 +20,7 @@ import {
 } from '../../store/song/song.selector';
 import { SongActionTypes } from '../../store/song/song.actions';
 import { filter, Subscription, take } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-song-list',
@@ -29,6 +30,7 @@ import { filter, Subscription, take } from 'rxjs';
     NgIf,
     AsyncPipe,
     ScrollingModule,
+    MatButtonModule,
     MatIconModule,
     MatDivider,
     MatRippleModule,

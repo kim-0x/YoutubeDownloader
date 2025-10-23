@@ -11,10 +11,18 @@
           [class.selected]="(selectedSongTitle$ | async) === detail.title"
           (click)="onClick(detail.title)"
         >
-          <div class="song-item-text">{{ detail.title }}</div>
           <mat-icon *ngIf="(selectedSongTitle$ | async) === detail.title"
             >check_small</mat-icon
           >
+          <div class="song-item-text">{{ detail.title }}</div>
+          <button
+            class="song-item-delete-button"
+            mat-icon-button
+            disableRipple
+            *ngIf="(selectedSongTitle$ | async) === detail.title"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
         </div>
       </ng-container>
       <mat-divider></mat-divider>
