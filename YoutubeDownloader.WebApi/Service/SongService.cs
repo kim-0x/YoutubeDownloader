@@ -8,7 +8,7 @@ public class SongService : ISongService
     {
         _dbContext = dbContext;
     }
-    public async Task AddSong(SongModel newSong)
+    public async Task AddSong(CreatedSongModel newSong)
     {
         await _dbContext.Songs.AddAsync(new Song
         {
@@ -24,6 +24,7 @@ public class SongService : ISongService
     {
         var list = await _dbContext.Songs
             .Select(s => new SongModel(
+                s.Id,
                 s.DateCreated.ToString("o"),
                 s.Title,
                 s.AudioPath

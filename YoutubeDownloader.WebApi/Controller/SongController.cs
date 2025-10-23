@@ -18,15 +18,22 @@ public class SongController : ControllerBase
         var result = list
             .OrderByDescending(x => DateTime.Parse(x.DateCreated))
             .GroupBy(x => x.DateCreated.ToDateLabel())
-            .ToDictionary(group => group.Key,
-                group => group.Select(x => new {x.Title, x.AudioUrl}));
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(x => new
+                {
+                    x.Id,
+                    x.Title,
+                    x.AudioUrl
+                })
+            );
         return Ok(result);
     }
     
     [HttpPost]
     public async Task<IActionResult> AddSong([FromBody] SongDto newSong)
     {
-        var song = new SongModel(
+        var song = new CreatedSongModel(
             DateTime.Today.ToString("d"),
             newSong.Title,
             newSong.AudioUrl
