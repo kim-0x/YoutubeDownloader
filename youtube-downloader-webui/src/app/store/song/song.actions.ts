@@ -9,6 +9,9 @@ export enum SongActionTypes {
   SaveSong = '[Song API] Save a Song',
   SaveSongSuccess = '[Song API] Song Saved Success',
   SaveSongFail = '[Song API] Song Saved Error',
+  DeleteSong = '[Song API] Delete a Song',
+  DeleteSongSuccess = '[Song API] Song Deleted Success',
+  DeleteSongFail = '[Song API] Song Deleted Error',
 }
 
 export const loadSongs = createAction(SongActionTypes.LoadSongs);
@@ -40,5 +43,20 @@ export const saveSongSuccess = createAction(
 
 export const saveSongFail = createAction(
   SongActionTypes.SaveSongFail,
+  props<{ error: string }>()
+);
+
+export const deleteSong = createAction(
+  SongActionTypes.DeleteSong,
+  props<{ id: number }>()
+);
+
+export const deleteSongSuccess = createAction(
+  SongActionTypes.DeleteSongSuccess,
+  props<{ payload: any }>()
+);
+
+export const deleteSongFail = createAction(
+  SongActionTypes.DeleteSongFail,
   props<{ error: string }>()
 );

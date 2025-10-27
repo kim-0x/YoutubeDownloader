@@ -1,5 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import {
+  deleteSong,
+  deleteSongSuccess,
   loadSongs,
   loadSongsFail,
   loadSongsSuccess,
@@ -25,6 +27,18 @@ function findSongDetail(items: Array<SongItem>, title: string) {
     title: result ? result.title : '',
     audioUrl: result ? result.audioUrl : '',
   };
+}
+
+function firstOrDefaultSongDetail(items: Array<SongItem>) {
+  const songDetails = items.flatMap((x) => x.songDetails);
+  if (songDetails.length === 0)
+    return {
+      id: 0,
+      title: '',
+      audioUrl: '',
+    };
+
+  return songDetails[0];
 }
 
 export const songReducer = createReducer(
@@ -53,5 +67,10 @@ export const songReducer = createReducer(
   on(saveSongFail, (state, { error }) => ({
     ...state,
     error: error,
+  })),
+  on(deleteSong, (state) => ({ ...state })),
+  on(deleteSongSuccess, (state) => ({
+    ...state,
+    selected: firstOrDefaultSongDetail(state.items),
   }))
 );

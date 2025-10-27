@@ -52,6 +52,33 @@ export class SongsEffects {
     );
   });
 
+  deleteSong$ = createEffect(() => {
+    return this._action$.pipe(
+      ofType(SongActionTypes.DeleteSong),
+      exhaustMap(({ id }) =>
+        this._httpClient.delete(`${SONG_API_URL}/${id}`).pipe(
+          map(() => ({
+            type: SongActionTypes.DeleteSongSuccess,
+            payload: id,
+          })),
+          catchError((exception) =>
+            of({
+              type: SongActionTypes.DeleteSongFail,
+              error: exception.error,
+            })
+          )
+        )
+      )
+    );
+  });
+
+  reloadAfterDeleteSongSuccess$ = createEffect(() => {
+    return this._action$.pipe(
+      ofType(SongActionTypes.DeleteSongSuccess),
+      map(() => loadSongs())
+    );
+  });
+
   reloadAfterSaveSongSuccess$ = createEffect(() => {
     return this._action$.pipe(
       ofType(SongActionTypes.SaveSongSuccess),

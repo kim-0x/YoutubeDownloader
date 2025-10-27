@@ -64,8 +64,13 @@ export class SongListComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  onClick(title: string) {
+  selectSong(title: string) {
     this._store.dispatch({ type: SongActionTypes.SelectSong, title });
+  }
+
+  deleteSong(event: Event, id: number) {
+    event.stopPropagation();
+    this._store.dispatch({ type: SongActionTypes.DeleteSong, id });
   }
 
   ngOnDestroy(): void {

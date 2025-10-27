@@ -9,7 +9,7 @@
           class="song-item"
           matRipple
           [class.selected]="(selectedSongTitle$ | async) === detail.title"
-          (click)="onClick(detail.title)"
+          (click)="selectSong(detail.title)"
         >
           <mat-icon *ngIf="(selectedSongTitle$ | async) === detail.title"
             >check_small</mat-icon
@@ -20,6 +20,7 @@
             mat-icon-button
             disableRipple
             *ngIf="(selectedSongTitle$ | async) === detail.title"
+            (click)="deleteSong($event, detail.id)"
           >
             <mat-icon>delete</mat-icon>
           </button>
